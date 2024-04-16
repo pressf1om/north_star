@@ -1,0 +1,36 @@
+{% extends "main.html" %}
+
+{% block body %}
+<style>
+    .data-window {
+        margin-top: 2%; /* Сдвигаем форму вниз */
+        margin-right: 25%; /* Сдвигаем форму вправо */
+    }
+    .container {
+        margin-right: -55%; /* Сдвигаем форму вправо */
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="data-window" style="background-color: white; padding: 20px; border: 2px solid #0077cc; border-radius: 10px;">
+                <h2 class="text-center" style="color: #0077cc;">Машины</h2>
+                <!-- <p class="text-center">Для подробного просмотра заявки нажмите на гос номер интересующей вас машины</p> -->
+                {% for el in car_print %}
+                    {% if el.status == 'В пути' %}
+                        {% set color_ = "yellow" %}
+                    {% elif el.status == 'Поездка завершена' %}
+                        {% set color_ = "green" %}
+                    {% else %}
+                        {% set color_ = "red" %}
+                    {% endif %}
+                    <div class="car-info" style="border: 1px solid black; padding: 10px; margin-bottom: 10px;">
+                        <p class="car-number" style="color: {{ color_ }}; border-bottom: 1px solid black;">{{ el.car_number }}</p>
+                        <p class="car-status">{{ el.status }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

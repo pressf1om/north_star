@@ -1,0 +1,26 @@
+{% extends "admin.html" %}
+{% block body %}
+<div class="oll">
+    <h1 align="center">Все пользователи: </h1>
+</div>
+<div class="print_user" align="center">
+        {% for el in data %}
+            <div class="container">
+                <div class="card-deck mb-3 text-center">
+                    <div class="print">
+                        <h2>ID: {{ el.id }}</h2>
+                        <h2>Login: {{ el.username }}<br></h2>
+                        <h2><br>Password: {{ el.password }}</h2>
+                        <h2><br>Email: {{ el.email }}</h2>
+                        <h2><br>Status: {{ el.status }}</h2>
+                    </div>
+                    </div>
+                    </div>
+                    <style>
+                            .print:hover {
+                                border: 7px solid #0866d1;
+                            }
+                    </style>
+            </div>
+        {% endfor %}
+{% endblock %}

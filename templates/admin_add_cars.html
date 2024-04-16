@@ -1,0 +1,36 @@
+{% extends "admin.html" %}
+{% block body %}
+<title>Регистрация</title>
+        <style>
+            .input_form {
+                background-color:#ffffff;
+	            border-radius:25px;
+                border:2px solid #dcdcdc;
+                color:#121212;
+                font-family:Trebuchet MS;
+                font-size:35px;
+            }
+            .button_reg {
+                background-color:#ffffff;
+                border-radius:25px;
+                border:2px solid #dcdcdc;
+                color:#121212;
+                font-family:Trebuchet MS;
+                font-size:30px;
+            }
+
+            .reg {
+                position:relative;
+                top: 20%;
+            }
+        </style>
+  <div class="reg" align="center">
+      <form method="post">
+          <h1>Регистрация машин</h1>
+            <ul><input type="text" placeholder="Номер машины" name="car_number" id="car_number" class="input_form"></ul>
+             <ul><input type="text" placeholder="Модель машины" name="model" id="model" class="input_form"></ul>
+
+              <ul><button type="submit" class="button_reg">Зарегистрировать машину</button></ul>
+      </form>
+  </div>
+{% endblock %}

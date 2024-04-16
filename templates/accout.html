@@ -1,0 +1,43 @@
+{% extends "main.html" %}
+
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card" style="background-color: #add8e6; border-radius: 10px;">
+                <div class="card-body">
+                    <h2 class="card-title">ID: {{ data.id }}</h2>
+                    <p class="card-text">Login: {{ data.username }}</p>
+                    <p class="card-text">Password: {{ data.password }}</p>
+                    <p class="card-text">Email: {{ data.email }}</p>
+                    <p class="card-text">Status: {{ data.status }}</p>
+                </div>
+            </div>
+            <div class="button_logout">
+                <a class="btn btn-primary mt-3" href="/logout">Выход</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+    margin-top: 25px; /* Отступ сверху */
+    margin-bottom: 50px; /* Отступ снизу */
+    margin-left: -450px; /* Автоматический отступ слева */
+    margin-right: auto; /* Автоматический отступ справа */
+    width: 100%; /* Ширина карточки */
+    max-width: 500px; /* Максимальная ширина карточки */
+    padding: 20px; /* Отступы внутри карточки */
+    border-radius: 10px; /* Закругление углов */
+}
+
+    .button_logout {
+    margin-top: -50px; /* Отступ сверху */
+    margin-left: -450px; /* Автоматический отступ слева */
+    }
+
+</style>
+
+{% endblock %}

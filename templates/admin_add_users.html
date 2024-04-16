@@ -1,0 +1,45 @@
+{% extends "admin.html" %}
+{% block body %}
+<title>Регистрация</title>
+        <style>
+            .input_form {
+                background-color:#ffffff;
+	            border-radius:25px;
+                border:2px solid #dcdcdc;
+                color:#121212;
+                font-family:Trebuchet MS;
+                font-size:35px;
+            }
+            .button_reg {
+                background-color:#ffffff;
+                border-radius:25px;
+                border:2px solid #dcdcdc;
+                color:#121212;
+                font-family:Trebuchet MS;
+                font-size:30px;
+            }
+
+            .reg {
+                position:relative;
+                top: 20%;
+            }
+        </style>
+  <div class="reg" align="center">
+      <form method="post">
+          <h1>Регистрация</h1>
+            <ul><input type="text" placeholder="Никнейм" name="username" id="username" class="input_form"></ul>
+             <ul><input type="text" placeholder="Пароль" name="password" id="password" class="input_form"></ul>
+              <ul><input type="email" placeholder="Почта" name="email" id="email" class="input_form"></ul>
+
+                <h1>Выберете уровнь допуска: </h1>
+              <select name="status">
+                <option>Администратор</option>
+                <option>Диспетчер</option>
+                  <option>Водитель</option>
+                  <option>Механик</option>
+              </select>
+
+              <ul><button type="submit" class="button_reg">Зарегистрироваться</button></ul>
+      </form>
+  </div>
+{% endblock %}

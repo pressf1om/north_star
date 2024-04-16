@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Vibur" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Vibur', cursive;
+      background-color: #f0f8ff; /* Light Sky Blue */
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .container {
+      width: 50%;
+      padding: 20px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .input_form {
+      background-color: #add8e6; /* Light Blue */
+      border-radius: 25px;
+      border: 2px solid #63b8ff; /* Dodger Blue */
+      color: #121212;
+      font-size: 20px;
+      padding: 10px 20px;
+      width: 100%;
+      transition: background-color 0.3s ease;
+    }
+    .input_form:focus {
+      background-color: #b0e0e6; /* Powder Blue */
+    }
+    .button_reg {
+      background-color: #63b8ff; /* Dodger Blue */
+      border-radius: 25px;
+      border: 2px solid #add8e6; /* Light Blue */
+      color: #ffffff; /* White */
+      font-size: 20px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
+    .button_reg:hover {
+      background-color: #4682b4; /* Steel Blue */
+    }
+    h1 {
+      color: #4682b4; /* Steel Blue */
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <form method="post">
+    <h1>Вход</h1>
+    <div class="form-group">
+      <input type="text" placeholder="Никнейм" name="username" id="username" class="input_form">
+    </div>
+    <div class="form-group">
+      <input type="password" placeholder="Пароль" name="password" id="password" class="input_form">
+    </div>
+    <button type="submit" class="button_reg">Войти</button>
+  </form>
+</div>
+</body>
+</html>

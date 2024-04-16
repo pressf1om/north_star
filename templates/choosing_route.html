@@ -1,0 +1,77 @@
+{% extends "main.html" %}
+
+{% block body %}
+
+    <div class="gallery-container">
+        {% for number, data_list in data_of_roads_for_analytics.items() %}
+        <div class="form-card">
+            <h2>Road {{ number }}</h2>
+            <p><strong>Start Date:</strong> {{ data_list[0] }}</p>
+            <p><strong>End Date:</strong> {{ data_list[1] }}</p>
+            <p><strong>Start Coordinates:</strong> {{ data_list[2] }}</p>
+            <p><strong>End Coordinates:</strong> {{ data_list[3] }}</p>
+            <p><strong>Cost:</strong> {{ data_list[4] }}</p>
+            <form method="post">
+                <!-- Include form fields here -->
+                <button type="submit" class="select-button">Выбрать</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.gallery-container {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar in IE/Edge */
+}
+
+.gallery-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in Webkit browsers */
+}
+
+.form-card {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 10px;
+    width: 300px;
+}
+
+.form-card h2 {
+    margin-top: 0;
+}
+
+.form-card p {
+    color: #666;
+}
+
+.select-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.select-button:hover {
+    background-color: #0056b3;
+}
+
+</style>
+{% endblock %}
