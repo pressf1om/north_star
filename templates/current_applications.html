@@ -1,0 +1,67 @@
+{% extends "main.html" %}
+{% block body %}
+<style>
+    .oll {
+        margin-bottom: 20px;
+    }
+
+    .print_user {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .container {
+        margin: 10px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .print {
+        text-align: left;
+        padding: 10px;
+        border: 2px solid #86c5da; /* Сине-голубая граница */
+        border-radius: 8px;
+    }
+
+    .print:hover {
+        border-color: #5bc0de; /* Темно-голубая граница при наведении */
+    }
+
+    .print h2 {
+        margin: 5px 0;
+        color: #000000; /* Сине-голубой цвет текста */
+    }
+
+    .print h2:first-child {
+        margin-top: 0;
+    }
+
+    .print h2:last-child {
+        margin-bottom: 0;
+    }
+</style>
+<div class="oll">
+    <h1 align="center">Все заявки: </h1>
+</div>
+<div class="print_user">
+    {% for el in data %}
+    <div class="container">
+        <div class="card-deck mb-3 text-center">
+            <div class="print">
+                <h2>ID: {{ el.id }}</h2>
+                <h2>coord_start: {{ el.coord_start }}</h2>
+                <h2>coord_end: {{ el.coord_end }}</h2>
+                <h2>date_of_start: {{ el.date_of_start }}</h2>
+                <h2>date_of_end: {{ el.date_of_end }}</h2>
+                <h2>status: {{ el.status }}</h2>
+                <h2>weight: {{ el.weight }}</h2>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

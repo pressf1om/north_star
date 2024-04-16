@@ -55,6 +55,23 @@ class Cars(db.Model, UserMixin):
     car_driver_id = db.Column(db.Integer)
 
 
+class Application(db.Model, UserMixin):
+    # айди заявки
+    id = db.Column(db.Integer, primary_key=True)
+    # координаты начала
+    coord_start = db.Column(db.String(120), nullable=False, unique=True)
+    # координаты конца
+    coord_end = db.Column(db.String(120), nullable=False, unique=True)
+    # дата начала поездки
+    date_of_start = sqlalchemy.Column(db.String(120), nullable=False)
+    # дата окончания поездки
+    date_of_end = sqlalchemy.Column(db.String(120), nullable=True)
+    # статус заявки
+    status = db.Column(db.String(120))
+    # вес груза
+    weight = db.Column(db.String(120), nullable=True)
+
+
 # необходимые переменные
 data_of_roads_for_analytics = {}
 
@@ -73,7 +90,7 @@ def home():
     db.create_all()
 
     #################################################################
-
+    """
     # изменение статуса машин
 
     # Получаем объект из базы данных
@@ -88,7 +105,7 @@ def home():
 
     # Зафиксируем изменения в базе данных
     db.session.commit()
-
+    """
     #################################################################
 
     # получаем айди зашедшего на сайт
@@ -177,7 +194,7 @@ def add_cars():
             car_number = request.form['car_number']
             model = request.form['model']
 
-            # собираем объект юзер_ для регистрации в бд
+            # собираем объект cars для регистрации в бд
             cars = Cars(car_number=car_number, model=model)
 
             # регистрация в базе
@@ -275,9 +292,6 @@ def logout():
     return redirect("/")
 
 
-# /current_applications
-
-
 # страница добавления заявок для анализа
 @app.route('/analytics_add_data', methods=['POST', 'GET'])
 @login_required
@@ -361,13 +375,40 @@ def registration_new_application():
             departure_date = request.form['departure-date']
             cargo_weight = request.form['cargo-weight']
 
-            print(start_point, end_point, departure_date, cargo_weight)
+            #  регистрация заявок
+            application = Application(coord_start=start_point, coord_end=end_point, date_of_start=departure_date, status='В пути', weight=cargo_weight)
 
-            # регистрация заявок
+            # регистрация в базе
+            db.session.add(application)
+            db.session.commit()
 
-            return redirect("/home")
+            print(f"application #{departure_date} was created")
+
+            return redirect("/current_applications")
         else:
             return render_template("registration_new_application.html")
+    else:
+        return 'у вас недостаточно прав'
+
+
+# страница отображения всех существующих заявок
+@app.route('/current_applications', methods=['POST', 'GET'])
+@login_required
+def current_applications():
+    # получаем айди зашедшего на сайт
+    user_id = current_user.id
+
+    # инфа о пользователе из бд
+    temp = (User.query.filter_by(id=user_id).first()).__dict__
+
+    # разграничение прав доступа
+    if temp['status'] == 'Администратор' or temp['status'] == 'Диспетчер':
+
+        # инфа о заявках из бд
+        temp1 = Application.query.order_by(Application.id).all()
+
+        # render
+        return render_template("current_applications.html", data=temp1)
     else:
         return 'у вас недостаточно прав'
 
