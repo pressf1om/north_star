@@ -91,9 +91,6 @@ def home():
     # создаются все бд на сервере
     db.create_all()
 
-    # Зафиксируем изменения в базе данных
-    db.session.commit()
-
     #################################################################
     """
     # изменение статуса машин
@@ -104,9 +101,9 @@ def home():
     car3 = Cars.query.filter_by(car_number='T888OA 71').first()
 
     # Изменяем атрибуты объекта
-    car1.status = 'хуй'
-    car2.status = 'хуй'
-    car3.status = 'хуй'
+    car1.status = ''
+    car2.status = ''
+    car3.status = ''
 
     # Зафиксируем изменения в базе данных
     db.session.commit()
@@ -230,7 +227,7 @@ def print_user():
 
 
 # админ панель
-@app.route("/admin")
+@app.route("/admin", methods=['POST', 'GET'])
 @login_required
 def admin():
     # получаем айди пользователя зашедшего на сайт
@@ -241,7 +238,40 @@ def admin():
 
     # разграничение прав доступа
     if user_status['status'] == 'Администратор':
-        return render_template("admin.html")
+        # инфа о заявках из бд
+        temp1 = Application.query.order_by(Application.id).all()
+
+        # функционал удаления заявки
+        if request.method == 'POST':
+            # ищем кнопку
+            application_id = request.form['id']
+            # выбираем заявку из бд
+            application_to_delete = Application.query.get(application_id)
+
+            # for delete
+            application_to_delete1 = Application.query.get(application_id).__dict__
+
+            # если она существует
+            if application_to_delete:
+                # получаем номер машины которая сейчас находится на заявке
+                car_now = application_to_delete1['car_now']
+
+                # внесение изменения в базу самих машин, изменение статуса машины
+                car_status_after_application_delete = Cars.query.filter_by(car_number=car_now).first()
+
+                # Изменяем атрибуты объекта
+                car_status_after_application_delete.status = 'Свободна'
+
+                # удаляем саму заявку
+                db.session.delete(application_to_delete)
+
+                # сохраняем изменения
+                db.session.commit()
+                return redirect("/admin")
+            else:
+                return "заявки не существует"
+        else:
+            return render_template("admin_home.html", data=temp1)
     else:
         return 'у вас недостаточно прав'
 
@@ -374,6 +404,12 @@ def registration_new_application():
             #  регистрация заявок
             application = Application(coord_start=start_point, coord_end=end_point, date_of_start=departure_date, status='В пути', weight=cargo_weight, car_now=car_now)
 
+            # внесение изменения в базу самих машин, изменение статуса машины
+            car_status_after_application = Cars.query.filter_by(car_number=car_now).first()
+
+            # Изменяем атрибуты объекта
+            car_status_after_application.status = 'В пути'
+
             # регистрация в базе
             db.session.add(application)
             db.session.commit()
@@ -398,7 +434,6 @@ def registration_new_application():
 
 
 # страница отображения всех существующих заявок
-# дописать функционал удаления заявки
 @app.route('/current_applications', methods=['POST', 'GET'])
 @login_required
 def current_applications():
