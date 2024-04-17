@@ -70,6 +70,8 @@ class Application(db.Model, UserMixin):
     status = db.Column(db.String(120))
     # вес груза
     weight = db.Column(db.String(120), nullable=True)
+    # фура на заявке сейчас
+    car_now = db.Column(db.String(120), nullable=True)
 
 
 # необходимые переменные
@@ -89,19 +91,22 @@ def home():
     # создаются все бд на сервере
     db.create_all()
 
+    # Зафиксируем изменения в базе данных
+    db.session.commit()
+
     #################################################################
     """
     # изменение статуса машин
 
     # Получаем объект из базы данных
-    car1 = Cars.query.filter_by(car_number='ху768й 777').first()
-    car2 = Cars.query.filter_by(car_number='ху888й 71').first()
-    car3 = Cars.query.filter_by(car_number='el999p 88').first()
+    car1 = Cars.query.filter_by(car_number='A080AA 71').first()
+    car2 = Cars.query.filter_by(car_number='B777AG 71').first()
+    car3 = Cars.query.filter_by(car_number='T888OA 71').first()
 
     # Изменяем атрибуты объекта
-    car1.status = 'Поездка завершена'
-    car2.status = 'На базе'
-    car3.status = 'В пути'
+    car1.status = 'хуй'
+    car2.status = 'хуй'
+    car3.status = 'хуй'
 
     # Зафиксируем изменения в базе данных
     db.session.commit()
@@ -117,17 +122,13 @@ def home():
     # инфа о машинах из бд
     car_print = Cars.query.order_by(Cars.id).all()
 
-    # достаем юзернейм для отображения в хедере
-    username = temp['username']
-    print(f'username = {username}')
-
     # разграничение прав доступа
     if temp['status'] == 'Администратор' or temp['status'] == 'Диспетчер':
         ##########################################################################
 
         ##########################################################################
 
-        return render_template("home.html", data=username, car_print=car_print)
+        return render_template("home.html", car_print=car_print)
     else:
         return 'у вас недостаточно прав'
 
@@ -203,7 +204,7 @@ def add_cars():
 
             print(f'CAR: {car_number}, {model} was created')
 
-            return redirect("/home")
+            return redirect("/admin")
         else:
             return render_template("admin_add_cars.html")
     else:
@@ -240,8 +241,7 @@ def admin():
 
     # разграничение прав доступа
     if user_status['status'] == 'Администратор':
-        user_print = User.query.order_by(User.id).all()
-        return render_template("admin.html", data=user_print)
+        return render_template("admin.html")
     else:
         return 'у вас недостаточно прав'
 
@@ -269,6 +269,7 @@ def login():
                 user__auth = user_auth_dict['username']
                 pass__auth = user_auth_dict['password']
             except:
+                # Дописать обработчик этой ошибки в хтмл
                 print('ПОльзовтель не найден')
 
             # если данные совпадают, то мы авторизовываем пользователя
@@ -278,9 +279,9 @@ def login():
                 print(f"никнейм вошедшего: {user__auth}")
                 return redirect("/home")
             else:
-                return 'ошибка 1'
+                return 'Логин либо пароль не совпадают с базой'
         else:
-            return 'ошибка 2'
+            return 'нет и того и другого, ошибка авторизации'
 
 
 # выход
@@ -302,10 +303,6 @@ def analytics_add_data():
     # инфа о пользователе из бд
     temp = (User.query.filter_by(id=user_id).first()).__dict__
 
-    # достаем юзернейм для отображения в хедере
-    username = temp['username']
-    print(f'username = {username}')
-
     # разграничение прав доступа
     if temp['status'] == 'Администратор' or temp['status'] == 'Диспетчер':
         if request.method == "POST":
@@ -317,6 +314,8 @@ def analytics_add_data():
             end_coordinates = request.form['end-coordinates']
             cost = request.form['cost']
 
+            # если получиться парсить автодор, то поле cost станет необязательным
+
             data_of_roads_for_analytics[f'{number_of_road}'] = \
                 [f'{date_start}',
                 f'{date_end}',
@@ -326,7 +325,7 @@ def analytics_add_data():
 
             return redirect("/analytics_add_data")
         else:
-            return render_template("analytics_add_data.html", data=username)
+            return render_template("analytics_add_data.html")
     else:
         return 'у вас недостаточно прав'
 
@@ -341,16 +340,12 @@ def analytics():
     # инфа о пользователе из бд
     temp = (User.query.filter_by(id=user_id).first()).__dict__
 
-    # достаем юзернейм для отображения в хедере
-    username = temp['username']
-    print(f'username = {username}')
-
     # разграничение прав доступа
     if temp['status'] == 'Администратор' or temp['status'] == 'Диспетчер':
         # словарь со всеми зареганными заявками
         print(data_of_roads_for_analytics)
         # после кнопки выбрать, удаление словаря
-        # делать через датасет
+        # делать через датасет с трассами и км и городами саму аналитику
         return render_template("choosing_route.html", data_of_roads_for_analytics=data_of_roads_for_analytics)
     else:
         return 'у вас недостаточно прав'
@@ -374,9 +369,10 @@ def registration_new_application():
             end_point = request.form['end-point']
             departure_date = request.form['departure-date']
             cargo_weight = request.form['cargo-weight']
+            car_now = request.form['car_now']
 
             #  регистрация заявок
-            application = Application(coord_start=start_point, coord_end=end_point, date_of_start=departure_date, status='В пути', weight=cargo_weight)
+            application = Application(coord_start=start_point, coord_end=end_point, date_of_start=departure_date, status='В пути', weight=cargo_weight, car_now=car_now)
 
             # регистрация в базе
             db.session.add(application)
@@ -386,12 +382,23 @@ def registration_new_application():
 
             return redirect("/current_applications")
         else:
-            return render_template("registration_new_application.html")
+            # собираем статусы машин для добавления в форму
+            free_cars = Cars.query.filter_by(status="Свободна").all()
+
+            # проверка
+            if free_cars:
+                # собираем список для отправки в форму
+                car_numbers = [car.car_number for car in free_cars]
+                # передаем если есть
+                return render_template("registration_new_application.html", free_cars=car_numbers)
+            else:
+                return render_template("registration_new_application.html", free_cars=["Нет свободных машин"])
     else:
         return 'у вас недостаточно прав'
 
 
 # страница отображения всех существующих заявок
+# дописать функционал удаления заявки
 @app.route('/current_applications', methods=['POST', 'GET'])
 @login_required
 def current_applications():

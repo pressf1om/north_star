@@ -102,10 +102,15 @@ button:hover {
                 <label for="cargo-weight">Вес груза</label>
                 <input type="number" id="cargo-weight" name="cargo-weight" required>
             </div>
+          <h1>Выберите машину, которая выполнит эту заявку:</h1>
+            <select name="car_now">
+                {% for car in free_cars %}
+                    <option>{{ car }}</option>
+                {% endfor %}
+            </select>
             <button type="submit">Создать заявку</button>
       </form>
     </div>
-    </div>
-
+</div>
 
 {% endblock %}
