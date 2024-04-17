@@ -5,12 +5,12 @@
     <div class="gallery-container">
         {% for number, data_list in data_of_roads_for_analytics.items() %}
         <div class="form-card">
-            <h2>Road {{ number }}</h2>
-            <p><strong>Start Date:</strong> {{ data_list[0] }}</p>
-            <p><strong>End Date:</strong> {{ data_list[1] }}</p>
-            <p><strong>Start Coordinates:</strong> {{ data_list[2] }}</p>
-            <p><strong>End Coordinates:</strong> {{ data_list[3] }}</p>
-            <p><strong>Cost:</strong> {{ data_list[4] }}</p>
+            <h2>Рейс № {{ number }}</h2>
+            <p><strong>Дата начала поездки:</strong> {{ data_list[0] }}</p>
+            <p><strong>Дата завершения поездки</strong> {{ data_list[1] }}</p>
+            <p><strong>Начальные координаты:</strong> {{ data_list[2] }}</p>
+            <p><strong>Конечные координаты:</strong> {{ data_list[3] }}</p>
+            <p><strong>Стоимость по автодору:</strong> {{ data_list[4] }}</p>
             <form method="post">
                 <!-- Include form fields here -->
                 <button type="submit" class="select-button">Выбрать</button>

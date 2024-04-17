@@ -45,6 +45,21 @@ input[type="number"] {
     box-sizing: border-box;
 }
 
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    appearance: none; /* Убираем стандартные стрелки */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%23000000"><path d="M7 7l3-3 3 3m0 6l-3 3-3-3" stroke="%23333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'); /* Добавляем свою иконку */
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 20px 20px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
 button {
     width: 100%;
     padding: 10px;
@@ -58,28 +73,29 @@ button {
 button:hover {
     background-color: #005ea6; /* Темно-синий цвет кнопки при наведении */
 }
-    .wrapper {
-        margin-right: 20px; /* отступ справа */
-        border: 2px solid #4a90e2; /* цвет рамки (сине-голубой) */
-        border-radius: 10px; /* скругление углов */
-        overflow: hidden; /* чтобы рамка не расширялась из-за теней */
-    }
-    .data-window {
-        width: 300px;
-        background-color: #FFFFFF;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .container_ {
-        margin-top: -465px; /* Сдвигаем элемент вверх на 10 пикселей */
-        margin-right: -500px;
-        display: flex;
-        justify-content: flex-end;
-        align-items: flex-start;
-        height: 100vh;
-    }
 
+.wrapper {
+    margin-right: 20px; /* отступ справа */
+    border: 2px solid #4a90e2; /* цвет рамки (сине-голубой) */
+    border-radius: 10px; /* скругление углов */
+    overflow: hidden; /* чтобы рамка не расширялась из-за теней */
+}
 
+.data-window {
+    width: 300px;
+    background-color: #FFFFFF;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.container_ {
+    margin-top: -465px; /* Сдвигаем элемент вверх на 10 пикселей */
+    margin-right: -500px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    height: 100vh;
+}
 </style>
 
 <div class="container" align="center">
@@ -102,7 +118,7 @@ button:hover {
                 <label for="cargo-weight">Вес груза</label>
                 <input type="number" id="cargo-weight" name="cargo-weight" required>
             </div>
-          <h1>Выберите машину, которая выполнит эту заявку:</h1>
+          <h2>Выберите машину, которая выполнит эту заявку:</h2>
             <select name="car_now">
                 {% for car in free_cars %}
                     <option>{{ car }}</option>

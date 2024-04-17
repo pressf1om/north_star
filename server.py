@@ -199,6 +199,15 @@ def add_cars():
             db.session.add(cars)
             db.session.commit()
 
+            # изменяем статус машины после регистрации на "Свободна"
+            car_status_change = Cars.query.filter_by(car_number=car_number).first()
+
+            # Изменяем атрибуты объекта
+            car_status_change.status = 'Свободна'
+
+            # сохраняем обновленный статус
+            db.session.commit()
+
             print(f'CAR: {car_number}, {model} was created')
 
             return redirect("/admin")

@@ -1,42 +1,42 @@
 {% extends "main.html" %}
 
 {% block body %}
-    <div class="container">
-        <h2>Travel Information</h2>
-        <form method="post" class="registration-form">
-            <div class="form-group">
-                <label for="start-date">Номер маршрута:</label>
-                <input type="text" maxlength="14" id="number_of_road" name="number_of_road" required>
-            </div>
-            <div class="form-group">
-                <label for="start-date">Start Date:</label>
-                <input type="date" id="start-date" name="start-date" required>
-            </div>
-            <div class="form-group">
-                <label for="end-date">End Date:</label>
-                <input type="date" id="end-date" name="end-date" required>
-            </div>
-            <div class="form-group">
-                <label for="start-coordinates">Start Coordinates:</label>
-                <input type="text" id="start-coordinates" name="start-coordinates" placeholder="Latitude, Longitude" required>
-            </div>
-            <div class="form-group">
-                <label for="end-coordinates">End Coordinates:</label>
-                <input type="text" id="end-coordinates" name="end-coordinates" placeholder="Latitude, Longitude" required>
-            </div>
-            <div class="form-group">
-                <label for="cost">Trip Cost:</label>
-                <input type="number" id="cost" name="cost" min="0" step="0.01" required>
-            </div>
-            <button type="submit">Submit</button>
-        </form>
-         <div class="analytics-btn">
-            <a href="/analytics">Go to Analytics</a>
+<div class="container">
+    <h2>Аналитика данных</h2>
+    <form method="post" class="registration-form">
+        <div class="form-group">
+            <label for="number_of_road">Номер маршрута:</label>
+            <input type="text" maxlength="14" id="number_of_road" name="number_of_road" required>
         </div>
+        <div class="form-group">
+            <label for="start-date">Дата начала рейса:</label>
+            <input type="date" id="start-date" name="start-date" required>
+        </div>
+        <div class="form-group">
+            <label for="end-date">Дата окончания рейса:</label>
+            <input type="date" id="end-date" name="end-date" required>
+        </div>
+        <div class="form-group">
+            <label for="start-coordinates">Начальные координаты:</label>
+            <input type="text" id="start-coordinates" name="start-coordinates" placeholder="Широта, долгота" required>
+        </div>
+        <div class="form-group">
+            <label for="end-coordinates">Конечные координаты:</label>
+            <input type="text" id="end-coordinates" name="end-coordinates" placeholder="Широта, долгота" required>
+        </div>
+        <div class="form-group">
+            <label for="cost">Стоимость поездки по автодору:</label>
+            <input type="number" id="cost" name="cost" min="0" step="0.01" required>
+        </div>
+        <button type="submit">Добавить</button>
+    </form>
+    <div class="analytics-btn">
+        <a href="/analytics">Перейти к аналитике</a>
     </div>
+</div>
 
 <style>
-    body {
+body {
     font-family: Arial, sans-serif;
     background-color: #f0f8ff; /* Light Sky Blue */
     margin: 0;
@@ -49,6 +49,7 @@
     padding: 20px;
     background-color: #add8e6; /* Light Blue */
     border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Тень */
 }
 
 h2 {

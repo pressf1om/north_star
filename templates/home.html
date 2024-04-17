@@ -9,6 +9,18 @@
     .container {
         margin-right: -55%; /* Сдвигаем форму вправо */
     }
+    .car-info {
+        border: 1px solid black; /* Добавляем рамку */
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    .car-number {
+        color: black; /* Цвет текста черный */
+        border: 2px solid black; /* Обводка текста */
+        padding: 5px; /* Добавляем отступ */
+        display: inline-block; /* Делаем элемент блочным */
+        border-radius: 5px; /* Скругляем углы обводки */
+    }
 </style>
 <div class="container">
     <div class="row">
@@ -18,9 +30,9 @@
                 <!-- <p class="text-center">Для подробного просмотра заявки нажмите на гос номер интересующей вас машины</p> -->
                 {% for el in car_print %}
                     {% if el.status == 'В пути' %}
-                        {% set color_ = "yellow" %}
+                        {% set color_ = "#536d8e" %}
                     {% elif el.status == 'Поездка завершена' %}
-                        {% set color_ = "green" %}
+                        {% set color_ = "#00ff80" %}
                     {% else %}
                         {% set color_ = "red" %}
                     {% endif %}
