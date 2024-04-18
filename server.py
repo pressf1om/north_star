@@ -10,6 +10,8 @@ import datetime
 import sqlalchemy
 import itsdangerous
 from flask_login import LoginManager, login_user, login_required, logout_user
+import json
+import plotly.graph_objs as go
 
 
 # app config
@@ -121,11 +123,60 @@ def home():
 
     # разграничение прав доступа
     if temp['status'] == 'Администратор' or temp['status'] == 'Диспетчер':
-        ##########################################################################
+        # Загрузка файла GeoJSON/json
+        with open('geo_data/geoBoundaries-RUS-ADM1_simplified.geojson') as f:
+            geojson_data = json.load(f)
 
-        ##########################################################################
+        # Создание карты с помощью Plotly
+        fig = go.Figure(go.Choroplethmapbox(
+            geojson=geojson_data,  # загруженный GeoJSON
+            locations=[],  # Список местоположений (если есть)
+            z=[],  # Список значений (если есть)
+            colorscale='Viridis',  # Цветовая схема
+            zmin=0,  # Минимальное значение
+            zmax=100,  # Максимальное значение
+            marker_opacity=0.5,  # Прозрачность маркеров
+            marker_line_width=0  # Ширина линии маркеров
+        ))
 
-        return render_template("home.html", car_print=car_print)
+        fig.update_layout(
+            mapbox_style="carto-positron",  # Стиль карты Mapbox
+            mapbox_zoom=3,  # Масштаб карты
+            mapbox_center={"lat": 55.7558, "lon": 37.6173}  # Центр карты (Москва)
+        )
+
+        # Добавляем точку для Москвы
+        fig.add_trace(go.Scattermapbox(
+            lat=[55.7558],
+            lon=[37.6173],
+            mode='markers',
+            marker=go.scattermapbox.Marker(
+                size=14,
+                color='red',
+                opacity=1
+            ),
+            text=['Moscow'],
+            hoverinfo='text'
+        ))
+
+        # Добавляем точку для Санкт-Петербурга
+        fig.add_trace(go.Scattermapbox(
+            lat=[59.9343],
+            lon=[30.3351],
+            mode='markers',
+            marker=go.scattermapbox.Marker(
+                size=14,
+                color='blue',
+                opacity=1
+            ),
+            text=['Saint Petersburg'],
+            hoverinfo='text'
+        ))
+
+        # Преобразование объекта графика в JSON для передачи в HTML
+        graph_json = fig.to_json()
+
+        return render_template("home.html", car_print=car_print, graph_json=graph_json)
     else:
         return 'у вас недостаточно прав'
 
