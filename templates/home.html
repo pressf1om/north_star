@@ -1,70 +1,65 @@
 {% extends "main.html" %}
 
 {% block head %}
-
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
         #map {
+            position: sticky;
+            top: 20px; /* Располагаем карту на уровне надписи "Машины" */
+            left: 8%;
             width: 1000px; /* Увеличиваем ширину карты */
             height: 650px; /* Уменьшаем высоту карты */
-            margin-left: 8%; /* Выравниваем по левому краю */
-            margin-top: -56%; /* Выравниваем по левому краю */
+            z-index: 1; /* Помещаем карту выше других элементов */
+        }
+        .data-window-container {
+            display: flex; /* Выравниваем элементы внутри блока по горизонтали */
+        }
+        .data-window {
+            background-color: white;
+            padding: 20px;
+            border: 2px solid #0077cc;
+            border-radius: 10px;
+            margin-right: 20px; /* Отступ справа 5px */
+            margin-left: 250px; /* Помещаем блок справа */
+            flex: 1; /* Растягиваем блок на всю доступную ширину */
+        }
+        .car-info {
+            border: 1px solid black; /* Добавляем рамку */
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .car-number {
+            color: black; /* Цвет текста черный */
+            border: 2px solid black; /* Обводка текста */
+            padding: 5px; /* Добавляем отступ */
+            display: inline-block; /* Делаем элемент блочным */
+            border-radius: 5px; /* Скругляем углы обводки */
         }
     </style>
-
 {% endblock %}
 
 {% block body %}
-<style>
-    body {
-        overflow-x: hidden;
-    }
-    .data-window {
-        margin-top: 2%; /* Сдвигаем форму вниз */
-        margin-right: 25%; /* Сдвигаем форму вправо */
-    }
-    .container {
-        margin-right: -55%; /* Сдвигаем форму вправо */
-    }
-    .car-info {
-        border: 1px solid black; /* Добавляем рамку */
-        padding: 10px;
-        margin-bottom: 10px;
-    }
-    .car-number {
-        color: black; /* Цвет текста черный */
-        border: 2px solid black; /* Обводка текста */
-        padding: 5px; /* Добавляем отступ */
-        display: inline-block; /* Делаем элемент блочным */
-        border-radius: 5px; /* Скругляем углы обводки */
-    }
-</style>
-<div class="container">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="data-window" style="background-color: white; padding: 20px; border: 2px solid #0077cc; border-radius: 10px;">
-                <h2 class="text-center" style="color: #0077cc;">Машины</h2>
-                <!-- <p class="text-center">Для подробного просмотра заявки нажмите на гос номер интересующей вас машины</p> -->
-                {% for el in car_print %}
-                    {% if el.status == 'В пути' %}
-                        {% set color_ = "#536d8e" %}
-                    {% elif el.status == 'Поездка завершена' %}
-                        {% set color_ = "#00ff80" %}
-                    {% else %}
-                        {% set color_ = "red" %}
-                    {% endif %}
-                    <div class="car-info" style="border: 1px solid black; padding: 10px; margin-bottom: 10px;">
-                        <p class="car-number" style="color: {{ color_ }}; border-bottom: 1px solid black;">{{ el.car_number }}</p>
-                        <p class="car-status">{{ el.status }}</p>
-                    </div>
-                {% endfor %}
+<div class="data-window-container">
+    <div id="map"></div>
+    <div class="data-window">
+        <h2 class="text-center" style="color: #0077cc;">Машины</h2>
+        {% for el in car_print %}
+            {% if el.status == 'В пути' %}
+                {% set color_ = "#536d8e" %}
+            {% elif el.status == 'Поездка завершена' %}
+                {% set color_ = "#00ff80" %}
+            {% else %}
+                {% set color_ = "red" %}
+            {% endif %}
+            <div class="car-info" style="border: 1px solid black; padding: 10px; margin-bottom: 10px;">
+                <p class="car-number" style="color: {{ color_ }}; border-bottom: 1px solid black;">{{ el.car_number }}</p>
+                <p class="car-status">{{ el.status }}</p>
             </div>
-        </div>
+        {% endfor %}
     </div>
 </div>
-<div id="map"></div>
-    <script>
-        var graph_json = {{ graph_json | safe }};
-        Plotly.newPlot('map', graph_json.data, graph_json.layout);
-    </script>
+<script>
+    var graph_json = {{ graph_json | safe }};
+    Plotly.newPlot('map', graph_json.data, graph_json.layout);
+</script>
 {% endblock %}
