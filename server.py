@@ -105,8 +105,10 @@ def home():
     # инфа о машинах из бд
     car_print = Cars.query.order_by(Cars.id).all()
 
+    # достаем все заявки в пути
     applications = Application.query.filter_by(status="В пути").all()
 
+    # получаем специальный словарь для отображения заявок на карте
     car_coordinates = {}
     for application_coord in applications:
         car_number = application_coord.car_now
@@ -136,49 +138,53 @@ def home():
         mapbox_center={"lat": 55.7558, "lon": 37.6173}  # Центр карты (Москва)
     )
 
-    # Добавляем точку для Москвы
-    fig.add_trace(go.Scattermapbox(
-        lat=[55.7558],
-        lon=[37.6173],
-        mode='markers',
-        marker=go.scattermapbox.Marker(
-            size=14,
-            color='red',
-            opacity=1
-        ),
-        text=['Moscow'],
-        hoverinfo='text'
-    ))
+    # Добавляем точки для городов
+    cities = {
+        'Москва': {'lat': 55.7558, 'lon': 37.6173, 'color': 'green'},
+        'Санкт-Петербург': {'lat': 59.9343, 'lon': 30.3351, 'color': 'green'},
+        'Екатеринбург': {'lat': 56.838011, 'lon': 60.597465, 'color': 'green'},
+        'Самара': {'lat': 53.195538, 'lon': 50.101783, 'color': 'green'},
+        'Казань': {'lat': 55.795793, 'lon': 49.106585, 'color': 'green'},
+        'Новосибирск': {'lat': 55.030199, 'lon': 82.920430, 'color': 'green'}
+    }
 
-    # Добавляем точку для Санкт-Петербурга
-    fig.add_trace(go.Scattermapbox(
-        lat=[59.9343],
-        lon=[30.3351],
-        mode='markers',
-        marker=go.scattermapbox.Marker(
-            size=14,
-            color='blue',
-            opacity=1
-        ),
-        text=['Saint Petersburg'],
-        hoverinfo='text'
-    ))
-
-    # Добавляем точки для каждой машины в пути
-    for car_number, (coord_start, coord_end) in car_coordinates.items():
-        # Добавляем точку начальной координаты
+    # генерируем города на карте
+    for city, data in cities.items():
         fig.add_trace(go.Scattermapbox(
-            lat=[coord_start[0], coord_end[0]],
-            lon=[coord_start[1], coord_end[1]],
+            lat=[data['lat']],
+            lon=[data['lon']],
             mode='markers',
             marker=go.scattermapbox.Marker(
                 size=14,
-                color='blue',  # Меняем цвет на синий
+                color=data['color'],
                 opacity=1
             ),
-            text=[f'Start: {coord_start[0]}, {coord_start[1]}', f'End: {coord_end[0]}, {coord_end[1]}'],  # Используем текст начальной и конечной координат
+            text=[city],
             hoverinfo='text',
-            name=car_number  # Устанавливаем имя маркера как номер машины
+            name=f'{city}'
+
+        ))
+
+    # Добавляем точки для каждой машины в пути
+    for car_number, (coord_start, coord_end) in car_coordinates.items():
+        # Разделяем строки начальных координат по запятой и преобразуем каждую часть в число
+        lat_start, lon_start = map(float, coord_start.split(','))
+
+        # Разделяем строки конечных координат по запятой и преобразуем каждую часть в число
+        lat_end, lon_end = map(float, coord_end.split(','))
+        # Добавляем точку начальной координаты
+        fig.add_trace(go.Scattermapbox(
+            lat=[lat_start, lat_end],
+            lon=[lon_start, lon_end],
+            mode='markers',
+            marker=go.scattermapbox.Marker(
+                size=14,
+                color='red',
+                opacity=1
+            ),
+            text=[f'Start {car_number}: {lat_start}, {lon_start}', f'End {car_number}: {lat_end}, {lon_end}'],  # Используем текст начальной и конечной координат
+            hoverinfo='text',
+            name=f'Машина {car_number}'  # Устанавливаем имя маркера как номер машины
         ))
 
     # Преобразование объекта графика в JSON для передачи в HTML
