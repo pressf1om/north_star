@@ -1,5 +1,5 @@
 # import
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, current_user
 from werkzeug.utils import redirect
@@ -12,6 +12,8 @@ import itsdangerous
 from flask_login import LoginManager, login_user, login_required, logout_user
 import json
 import plotly.graph_objs as go
+from flask_restful import Api, Resource
+from sqlalchemy.orm import class_mapper
 
 
 # app config
@@ -23,6 +25,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
+api = Api(app)
 
 
 # class user for db
@@ -92,25 +95,6 @@ def load_user(user_id):
 def home():
     # создаются все бд на сервере
     db.create_all()
-
-    #################################################################
-    """
-    # изменение статуса машин
-
-    # Получаем объект из базы данных
-    car1 = Cars.query.filter_by(car_number='A080AA 71').first()
-    car2 = Cars.query.filter_by(car_number='B777AG 71').first()
-    car3 = Cars.query.filter_by(car_number='T888OA 71').first()
-
-    # Изменяем атрибуты объекта
-    car1.status = ''
-    car2.status = ''
-    car3.status = ''
-
-    # Зафиксируем изменения в базе данных
-    db.session.commit()
-    """
-    #################################################################
 
     # получаем айди зашедшего на сайт
     user_id = current_user.id
@@ -513,6 +497,80 @@ def current_applications():
         return render_template("current_applications.html", data=temp1)
     else:
         return 'у вас недостаточно прав'
+
+
+# преобразование объекта бд в словарь
+def sqlalchemy_to_dict(obj):
+    try:
+        return {column.key: getattr(obj, column.key) for column in class_mapper(obj.__class__).columns}
+    except:
+        return {'message': 'Application not found'}, 404
+
+
+# API для мобильного приложения водителей
+class Application_api(Resource):
+    # получение актуальной заявки
+    def get(self, car_number):
+        # получаем объект из бд
+        application = (Application.query.filter_by(car_now=car_number, status="В пути").first())
+        # преобразовываем в словарь с помощью sqlalchemy_to_dict
+        application_dict = sqlalchemy_to_dict(application)
+        # если объект не пустой
+        if application_dict:
+            return jsonify(application_dict)
+        else:
+            return {'message': 'Application not found'}, 404
+
+    # внесение изменений в статус заявки
+    def post(self, car_number):
+        # Возможны 3 статуса
+        # Поездка завершена
+        # В пути
+        # Свободна
+        # Получаем данные о заявке из запроса
+        data = request.get_json()
+
+        # Получаем объект заявки из базы данных по номеру машины
+        application_post = Application.query.filter_by(car_now=car_number).first()
+
+        # Получаем объект машины из базы данных по номеру машины
+        car_post = Cars.query.filter_by(car_number=car_number).first()
+
+        # Проверяем, существует ли такая заявка
+        if application_post:
+            # Если существует, изменяем статус заявки
+            new_status = data.get('new_status')  # Предполагаем, что новый статус передается в теле запроса
+            # Если в пути, то меняем статус
+            if new_status == "В пути":
+                # меняем статус машины
+                car_post.status = 'В пути'
+                # меняем статус заявки
+                application_post.status = 'В пути'
+            # Если Поездка завершена, то меняем статус
+            elif new_status == "Поездка завершена":
+                # меняем статус машины
+                car_post.status = 'Поездка завершена'
+                # меняем статус заявки
+                application_post.status = 'Поездка завершена'
+            # Если Свободна, то меняем статус
+            elif new_status == "Свободна":
+                # меняем статус машины
+                car_post.status = 'Свободна'
+                # меняем статус заявки
+                application_post.status = 'Выполнена'
+
+            # Сохраняем изменения в базе данных
+            db.session.commit()
+
+            # Возвращаем сообщение об успешном изменении статуса
+            return {'message': 'Status updated successfully'}, 200
+        else:
+            # Если заявка не найдена, возвращаем сообщение об ошибке
+            return {'message': 'Application not found'}, 404
+
+
+# Добавление ресурса к API
+api.add_resource(Application_api, '/api/applications/<string:car_number>')
 
 
 if __name__ == '__main__':
