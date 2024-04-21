@@ -1,0 +1,49 @@
+{% extends "admin.html" %}
+{% block body %}
+<style>
+    form {
+        margin: 20px auto;
+        padding: 20px;
+        width: 300px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+    label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+    input[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    input[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<form action="/admin/add_settings" method="post">
+    <label for="driver_salary">Зарплата водителя:</label>
+    <input type="number" id="driver_salary" name="driver_salary" step="0.01" placeholder="Рубль\километр">
+
+    <label for="platon_cost">Стоимость проезда по платону:</label>
+    <input type="number" id="platon_cost" name="platon_cost" step="0.01" placeholder="Рубль\километр">
+
+    <input type="submit" value="Добавить настройки">
+</form>
+
+{% endblock %}

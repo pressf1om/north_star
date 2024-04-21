@@ -5,7 +5,7 @@
         margin-bottom: 20px;
     }
 
-        /* Добавленные стили для кнопки */
+    /* Добавленные стили для кнопки */
     .delete-button {
         background-color: #dc3545; /* Красный цвет фона */
         color: #fff; /* Белый цвет текста */
@@ -22,8 +22,8 @@
 
     .print_user {
         display: flex;
-        justify-content: center;
-        align-items: center;
+        justify-content: space-between; /* Равномерно распределяем пространство между элементами */
+        align-items: flex-start; /* Выравниваем элементы по верхнему краю */
         flex-wrap: wrap;
     }
 
@@ -33,6 +33,7 @@
         background-color: #f8f9fa;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        flex: 0 0 45%; /* Ширина блока 45%, чтобы поместилось два блока на больших экранах */
     }
 
     .print {
@@ -58,30 +59,52 @@
     .print h2:last-child {
         margin-bottom: 0;
     }
+
+    .settings-container {
+        flex: 0 0 45%; /* Ширина блока 45% */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #f8f9fa;
+    }
+
+    .settings-container h2 {
+        margin-top: 0;
+    }
 </style>
 <div class="oll">
     <h1 align="center">Все заявки: </h1>
 </div>
 <div class="print_user">
-    {% for el in data %}
     <div class="container">
-        <div class="card-deck mb-3 text-center">
-            <div class="print">
-                <h2>ID: {{ el.id }}</h2>
-                <h2>coord_start: {{ el.coord_start }}</h2>
-                <h2>coord_end: {{ el.coord_end }}</h2>
-                <h2>date_of_start: {{ el.date_of_start }}</h2>
-                <h2>date_of_end: {{ el.date_of_end }}</h2>
-                <h2>status: {{ el.status }}</h2>
-                <h2>weight: {{ el.weight }}</h2>
-                <h2>car_now: {{ el.car_now }}</h2>
-                <form method="post">
-                    <input type="hidden" name="id" value="{{ el.id }}">
-                    <button type="submit" class="delete-button">Удалить заявку</button>
-                </form>
+        {% for el in data %}
+            <div class="card-deck mb-3 text-center">
+                <div class="print">
+                    <h2>ID: {{ el.id }}</h2>
+                    <h2>coord_start: {{ el.coord_start }}</h2>
+                    <h2>coord_end: {{ el.coord_end }}</h2>
+                    <h2>date_of_start: {{ el.date_of_start }}</h2>
+                    <h2>date_of_end: {{ el.date_of_end }}</h2>
+                    <h2>status: {{ el.status }}</h2>
+                    <h2>weight: {{ el.weight }}</h2>
+                    <h2>car_now: {{ el.car_now }}</h2>
+                    <form method="post">
+                        <input type="hidden" name="id" value="{{ el.id }}">
+                        <button type="submit" class="delete-button">Удалить заявку</button>
+                    </form>
+                </div>
             </div>
-        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
+    <div class="settings-container">
+        <h2>Главные настройки:</h2>
+        <ul>
+            {% for setting in settings %}
+                <li>Зарплата водителя (руб/км): {{ setting.driver_salary }}</li>
+                <li>Стоимость проезда Платон (руб/км): {{ setting.platon_cost }}</li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
 {% endblock %}
+

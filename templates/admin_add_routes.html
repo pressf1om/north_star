@@ -1,0 +1,97 @@
+{% extends "admin.html" %}
+
+{% block body %}
+<title>Регистрация маршрутов</title>
+<style>
+    body {
+        background-color: #f0f0f0;
+        font-family: Trebuchet MS, sans-serif;
+    }
+
+    .container {
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .input_form {
+        width: 100%;
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 2px solid #dcdcdc;
+        border-radius: 25px;
+        font-size: 18px;
+        color: #121212;
+        box-sizing: border-box;
+    }
+
+    select {
+        width: 100%;
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 2px solid #dcdcdc;
+        border-radius: 25px;
+        font-size: 18px;
+        color: #121212;
+        background-color: #ffffff;
+        box-sizing: border-box;
+    }
+
+    .button_reg {
+        width: 100%;
+        padding: 15px;
+        background-color: #007bff;
+        border: none;
+        border-radius: 25px;
+        color: #ffffff;
+        font-size: 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .button_reg:hover {
+        background-color: #0056b3;
+    }
+
+    .reg {
+        position: relative;
+        top: 20%;
+    }
+</style>
+<div class="container">
+    <div class="form-header">
+        <h1>Регистрация маршрутов</h1>
+    </div>
+    <div class="reg" align="center">
+        <form method="post">
+        <label for="city_start">Начальный город:</label><br>
+        <input type="text" id="city_start" name="city_start"><br>
+
+        <label for="city_end">Конечный город:</label><br>
+        <input type="text" id="city_end" name="city_end"><br>
+
+        <label for="platon_km">Километры по Платону:</label><br>
+        <input type="number" id="platon_km" name="platon_km"><br>
+
+        <label for="autodor_km">Километры по Автодору:</label><br>
+        <input type="number" id="autodor_km" name="autodor_km"><br>
+
+        <label for="oll_km">Общее количество километров:</label><br>
+        <input type="number" id="oll_km" name="oll_km"><br>
+
+        <label for="cities_on_route">Города на пути:</label><br>
+        <textarea id="cities_on_route" name="cities_on_route" rows="4" cols="50" placeholder="Название городов с пробелом, например Великий Новгород, нужно писать слитно"></textarea><br>
+
+            <button type="submit" class="button_reg">Зарегистрировать маршрут</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,6 @@
 # import
+import re
+
 from flask import Flask, request, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, current_user
@@ -77,6 +79,34 @@ class Application(db.Model, UserMixin):
     weight = db.Column(db.String(120), nullable=True)
     # фура на заявке сейчас
     car_now = db.Column(db.String(120), nullable=True)
+
+
+class Routes(db.Model, UserMixin):
+    # айди маршрута
+    id = db.Column(db.Integer, primary_key=True)
+    # Точка начала
+    city_start = db.Column(db.String(120), nullable=False)
+    # Точка окончания маршрута
+    city_end = db.Column(db.String(120), nullable=False)
+    # дата регистрации
+    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+    # Километры по платону
+    platon_km = db.Column(db.Integer)
+    # Километры по автодору
+    autodor_km = db.Column(db.Integer, nullable=True)
+    # Общие километры
+    oll_km = db.Column(db.Integer)
+    # Города на пути
+    cities_on_route = db.Column(db.JSON)
+
+
+class Settings_for_routes(db.Model):
+    # id
+    id = db.Column(db.Integer, primary_key=True)
+    # Зарплата водителя
+    driver_salary = db.Column(db.Float)
+    # Стоимость проезда по платону
+    platon_cost = db.Column(db.Float)
 
 
 # необходимые переменные
@@ -239,6 +269,99 @@ def add_users():
         return 'у вас недостаточно прав'
 
 
+# регистрация маршрутов администратором
+@app.route('/admin/add_routes', methods=['POST', 'GET'])
+@login_required
+def add_routes():
+    # Получаем айди пользователя, зашедшего на сайт
+    user_id = current_user.id
+
+    # Забираем информацию из базы данных о пользователе
+    user_status = User.query.filter_by(id=user_id).first()
+
+    # Разграничение прав доступа
+    if user_status.status == 'Администратор':
+        if request.method == "POST":
+            # Получение данных из формы
+            city_start = request.form['city_start']
+            city_end = request.form['city_end']
+            platon_km = request.form['platon_km']
+            autodor_km = request.form['autodor_km']
+            oll_km = request.form['oll_km']
+            cities_on_route_input = request.form['cities_on_route']
+
+            # Разделение введенной строки на отдельные города
+            cities_on_route = [city.strip() for city in re.split(r'[,; ]+', cities_on_route_input)]
+
+            # Создание объекта маршрута для регистрации в базе данных
+            route = Routes(city_start=city_start, city_end=city_end, platon_km=platon_km, autodor_km=autodor_km,
+                           oll_km=oll_km, cities_on_route=cities_on_route)
+
+            # Регистрация маршрута в базе данных
+            db.session.add(route)
+            db.session.commit()
+
+            return redirect("/admin/add_routes")
+        else:
+            return render_template("admin_add_routes.html")
+    else:
+        return 'У вас недостаточно прав'
+
+
+# Посмотреть все маршруты
+@app.route("/admin/print_routes")
+@login_required
+def print_routes():
+    # Получаем айди пользователя, зашедшего на сайт
+    user_id = current_user.id
+
+    # Забираем информацию из базы данных о пользователе
+    user_status = User.query.filter_by(id=user_id).first()
+
+    # Разграничение прав доступа
+    if user_status.status == 'Администратор':
+        routes_print = Routes.query.order_by(Routes.id).all()
+        return render_template("print_routes.html", data=routes_print)
+    else:
+        return 'У вас недостаточно прав'
+
+
+# добавление настроек для оценки стоимости маршрутов
+@app.route('/admin/add_settings', methods=['POST', 'GET'])
+@login_required
+def add_settings():
+    # Получаем айди пользователя, зашедшего на сайт
+    user_id = current_user.id
+
+    # Забираем информацию из базы данных о пользователе
+    user_status = User.query.filter_by(id=user_id).first()
+
+    # Разграничение прав доступа
+    if user_status.status == 'Администратор':
+        if request.method == "POST":
+            # Получение данных из формы
+            driver_salary = request.form['driver_salary']
+            platon_cost = request.form['platon_cost']
+
+            # Проверка существования предыдущих настроек и их удаление, если они есть
+            previous_settings = Settings_for_routes.query.get(1)
+            if previous_settings:
+                db.session.delete(previous_settings)
+
+            # Создание объекта настроек для регистрации в базе данных
+            settings = Settings_for_routes(driver_salary=driver_salary, platon_cost=platon_cost)
+
+            # Регистрация настроек в базе данных
+            db.session.add(settings)
+            db.session.commit()
+
+            return redirect("/admin")  # редирект home админа
+        else:
+            return render_template("add_settings.html")
+    else:
+        return 'У вас недостаточно прав'
+
+
 # регистрация машин администратором
 @app.route('/admin/add_cars', methods=['POST', 'GET'])
 @login_required
@@ -344,7 +467,9 @@ def admin():
             else:
                 return "заявки не существует"
         else:
-            return render_template("admin_home.html", data=temp1)
+            # Получение главных настроек из базы данных
+            settings = Settings_for_routes.query.all()
+            return render_template("admin_home.html", data=temp1, settings=settings)
     else:
         return 'у вас недостаточно прав'
 

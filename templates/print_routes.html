@@ -1,0 +1,50 @@
+{% extends "admin.html" %}
+{% block body %}
+<style>
+    .oll {
+        margin-top: 20px;
+    }
+    .print_routes {
+        margin-top: 20px;
+    }
+    .container {
+        margin-bottom: 20px;
+    }
+    .print {
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .print h2 {
+        color: #333;
+        margin: 10px 0;
+    }
+    .print:hover {
+        border-color: #0866d1;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+<div class="oll">
+    <h1 align="center">Все маршруты:</h1>
+</div>
+<div class="print_routes" align="center">
+    {% for route in data %}
+    <div class="container">
+        <div class="card-deck mb-3 text-center">
+            <div class="print">
+                <h2>ID маршрута: {{ route.id }}</h2>
+                <h2>Начальный город: {{ route.city_start }}</h2>
+                <h2>Конечный город: {{ route.city_end }}</h2>
+                <h2>Километры по Платону: {{ route.platon_km }}</h2>
+                <h2>Километры по Автодору: {{ route.autodor_km }}</h2>
+                <h2>Общее количество километров: {{ route.oll_km }}</h2>
+                <h2>Города на пути: {{ route.cities_on_route }}</h2>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
