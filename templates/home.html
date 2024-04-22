@@ -44,16 +44,29 @@
     <div class="data-window">
         <h2 class="text-center" style="color: #0077cc;">Машины</h2>
         {% for el in car_print %}
-            {% if el.status == 'В пути' %}
+            {% if el.status == '3' %}
                 {% set color_ = "#536d8e" %}
-            {% elif el.status == 'Поездка завершена' %}
+            {% elif el.status == '2' %}
+                {% set color_ = "#ffa500" %}
+            {% elif el.status == '4' %}
                 {% set color_ = "#00ff80" %}
             {% else %}
                 {% set color_ = "red" %}
             {% endif %}
             <div class="car-info" style="border: 1px solid black; padding: 10px; margin-bottom: 10px;">
                 <p class="car-number" style="color: {{ color_ }}; border-bottom: 1px solid black;">{{ el.car_number }}</p>
-                <p class="car-status">{{ el.status }}</p>
+                <p class="car-status">
+                    Статус:
+                    {% if el.status == "1" %}
+                        Свободна
+                    {% elif el.status == "2" %}
+                        Назначена
+                    {% elif el.status == "3" %}
+                        В пути
+                    {% elif el.status == "4" %}
+                        Выполнена
+                    {% endif %}
+                </p>
             </div>
         {% endfor %}
     </div>

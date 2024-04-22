@@ -48,7 +48,7 @@
     <h1 align="center">Все заявки: </h1>
 </div>
 <div class="print_user">
-    {% for el in data %}
+{% for el in data %}
     <div class="container">
         <div class="card-deck mb-3 text-center">
             <div class="print">
@@ -57,12 +57,22 @@
                 <h2>Координаты конечной точки: {{ el.coord_end }}</h2>
                 <h2>Дата начала поездки: {{ el.date_of_start }}</h2>
                 <h2>Дата завершения рейса: {{ el.date_of_end }}</h2>
-                <h2>Статус заявки: {{ el.status }}</h2>
+                <h2>Статус заявки:
+                    {% if el.status == "1" %}
+                        Свободна
+                    {% elif el.status == "2" %}
+                        Назначена
+                    {% elif el.status == "3" %}
+                        В пути
+                    {% elif el.status == "4" %}
+                        Выполнена
+                    {% endif %}
+                </h2>
                 <h2>Вес груза (в тоннах): {{ el.weight }}</h2>
                 <h2>Какая машина доставляет груз: {{ el.car_now }}</h2>
             </div>
         </div>
     </div>
-    {% endfor %}
+{% endfor %}
 </div>
 {% endblock %}

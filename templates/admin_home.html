@@ -77,24 +77,34 @@
 </div>
 <div class="print_user">
     <div class="container">
-        {% for el in data %}
-            <div class="card-deck mb-3 text-center">
-                <div class="print">
-                    <h2>ID: {{ el.id }}</h2>
-                    <h2>coord_start: {{ el.coord_start }}</h2>
-                    <h2>coord_end: {{ el.coord_end }}</h2>
-                    <h2>date_of_start: {{ el.date_of_start }}</h2>
-                    <h2>date_of_end: {{ el.date_of_end }}</h2>
-                    <h2>status: {{ el.status }}</h2>
-                    <h2>weight: {{ el.weight }}</h2>
-                    <h2>car_now: {{ el.car_now }}</h2>
-                    <form method="post">
-                        <input type="hidden" name="id" value="{{ el.id }}">
-                        <button type="submit" class="delete-button">Удалить заявку</button>
-                    </form>
-                </div>
-            </div>
-        {% endfor %}
+{% for el in data %}
+    <div class="card-deck mb-3 text-center">
+        <div class="print">
+            <h2>ID: {{ el.id }}</h2>
+            <h2>coord_start: {{ el.coord_start }}</h2>
+            <h2>coord_end: {{ el.coord_end }}</h2>
+            <h2>date_of_start: {{ el.date_of_start }}</h2>
+            <h2>date_of_end: {{ el.date_of_end }}</h2>
+            <h2>Status:
+                {% if el.status == "1" %}
+                    Свободна
+                {% elif el.status == "2" %}
+                    Назначена
+                {% elif el.status == "3" %}
+                    В пути
+                {% elif el.status == "4" %}
+                    Выполнена
+                {% endif %}
+            </h2>
+            <h2>weight: {{ el.weight }}</h2>
+            <h2>car_now: {{ el.car_now }}</h2>
+            <form method="post">
+                <input type="hidden" name="id" value="{{ el.id }}">
+                <button type="submit" class="delete-button">Удалить заявку</button>
+            </form>
+        </div>
+    </div>
+{% endfor %}
     </div>
     <div class="settings-container">
         <h2>Главные настройки:</h2>

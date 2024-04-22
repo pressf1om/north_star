@@ -112,6 +112,12 @@ class Settings_for_routes(db.Model):
 # необходимые переменные
 data_of_roads_for_analytics = {}
 
+# статусы
+# 1 - Свободна
+# 2 - Назначена
+# 3 - В пути
+# 4 - Выполнена
+
 
 # авторизация
 @login_manager.user_loader
@@ -133,7 +139,7 @@ def home():
     car_print = Cars.query.order_by(Cars.id).all()
 
     # достаем все заявки в пути
-    applications = Application.query.filter_by(status="В пути").all()
+    applications = Application.query.filter_by(status="3").all()
 
     # получаем специальный словарь для отображения заявок на карте
     car_coordinates = {}
@@ -390,7 +396,7 @@ def add_cars():
             car_status_change = Cars.query.filter_by(car_number=car_number).first()
 
             # Изменяем атрибуты объекта
-            car_status_change.status = 'Свободна'
+            car_status_change.status = '1'
 
             # сохраняем обновленный статус
             db.session.commit()
@@ -456,7 +462,7 @@ def admin():
                 car_status_after_application_delete = Cars.query.filter_by(car_number=car_now).first()
 
                 # Изменяем атрибуты объекта
-                car_status_after_application_delete.status = 'Свободна'
+                car_status_after_application_delete.status = '1'
 
                 # удаляем саму заявку
                 db.session.delete(application_to_delete)
@@ -617,13 +623,13 @@ def registration_new_application():
             car_now = request.form['car_now']
 
             #  регистрация заявок
-            application = Application(coord_start=start_point, coord_end=end_point, date_of_start=departure_date, status='В пути', weight=cargo_weight, car_now=car_now)
+            application = Application(coord_start=start_point, coord_end=end_point, date_of_start=departure_date, status='2', weight=cargo_weight, car_now=car_now)
 
             # внесение изменения в базу самих машин, изменение статуса машины
             car_status_after_application = Cars.query.filter_by(car_number=car_now).first()
 
             # Изменяем атрибуты объекта
-            car_status_after_application.status = 'В пути'
+            car_status_after_application.status = '2'
 
             # регистрация в базе
             db.session.add(application)
@@ -634,7 +640,7 @@ def registration_new_application():
             return redirect("/current_applications")
         else:
             # собираем статусы машин для добавления в форму
-            free_cars = Cars.query.filter_by(status="Свободна").all()
+            free_cars = Cars.query.filter_by(status="1").all()
 
             # проверка
             if free_cars:
@@ -683,7 +689,7 @@ class Application_api(Resource):
     # получение актуальной заявки
     def get(self, car_number):
         # получаем объект из бд
-        application = (Application.query.filter_by(car_now=car_number, status="В пути").first())
+        application = (Application.query.filter_by(car_now=car_number, status="3").first())
         # преобразовываем в словарь с помощью sqlalchemy_to_dict
         application_dict = sqlalchemy_to_dict(application)
         # если объект не пустой
@@ -712,23 +718,23 @@ class Application_api(Resource):
             # Если существует, изменяем статус заявки
             new_status = data.get('new_status')  # Предполагаем, что новый статус передается в теле запроса
             # Если в пути, то меняем статус
-            if new_status == "В пути":
+            if new_status == "3":
                 # меняем статус машины
-                car_post.status = 'В пути'
+                car_post.status = '3'
                 # меняем статус заявки
-                application_post.status = 'В пути'
+                application_post.status = '3'
             # Если Поездка завершена, то меняем статус
-            elif new_status == "Поездка завершена":
+            elif new_status == "4":
                 # меняем статус машины
-                car_post.status = 'Поездка завершена'
+                car_post.status = '4'
                 # меняем статус заявки
-                application_post.status = 'Поездка завершена'
+                application_post.status = '4'
             # Если Свободна, то меняем статус
-            elif new_status == "Свободна":
+            elif new_status == "1":
                 # меняем статус машины
-                car_post.status = 'Свободна'
+                car_post.status = '1'
                 # меняем статус заявки
-                application_post.status = 'Выполнена'
+                application_post.status = '1'
 
             # Сохраняем изменения в базе данных
             db.session.commit()
