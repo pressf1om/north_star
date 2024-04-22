@@ -14,7 +14,7 @@ def post(number_car):
     url = f"http://127.0.0.1:5000/api/applications/{number_car}"  # кодирование пробела в URL
     # JSON-тело запроса
     payload = {
-        "new_status": "В пути"
+        "new_status": "4"
     }
 
     # Отправка POST-запроса

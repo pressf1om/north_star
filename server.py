@@ -735,6 +735,12 @@ class Application_api(Resource):
                 car_post.status = '1'
                 # меняем статус заявки
                 application_post.status = '1'
+                # Если Свободна, то меняем статус
+            elif new_status == "2":
+                # меняем статус машины
+                car_post.status = '2'
+                # меняем статус заявки
+                application_post.status = '2'
 
             # Сохраняем изменения в базе данных
             db.session.commit()
