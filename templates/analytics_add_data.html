@@ -17,12 +17,15 @@
             <input type="date" id="end-date" name="end-date" required>
         </div>
         <div class="form-group">
-            <label for="start-coordinates">Начальные координаты:</label>
-            <input type="text" id="start-coordinates" name="start-coordinates" placeholder="Широта, долгота" required>
-        </div>
-        <div class="form-group">
-            <label for="end-coordinates">Конечные координаты:</label>
-            <input type="text" id="end-coordinates" name="end-coordinates" placeholder="Широта, долгота" required>
+            <label for="route">Маршрут:</label>
+            <div class="select-wrapper">
+                <select id="route" name="route" required>
+                    <option value="" disabled selected>Выберите маршрут</option>
+                    {% for route in routes %}
+                        <option value="{{ route.id }}">{{ route.city_start }} - {{ route.city_end }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
         <div class="form-group">
             <label for="cost">Стоимость поездки по автодору:</label>
@@ -40,13 +43,34 @@
 </div>
 
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f8ff; /* Light Sky Blue */
-    margin: 0;
-    padding: 0;
+/* Стили для селектора */
+.select-wrapper {
+    position: relative;
 }
 
+.select-wrapper select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    font-size: 16px;
+    -webkit-appearance: none; /* Убираем стандартные стили для WebKit браузеров */
+    -moz-appearance: none; /* Убираем стандартные стили для Firefox */
+    appearance: none; /* Убираем стандартные стили для других браузеров */
+}
+
+.select-wrapper::after {
+    content: '\25BC'; /* Стрелка вниз */
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #666; /* Цвет стрелки */
+}
+
+/* Дополнительные стили для элементов формы */
 .container {
     max-width: 500px;
     margin: 20px auto;

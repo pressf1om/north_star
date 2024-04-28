@@ -1,6 +1,6 @@
 # import
 import re
-
+from EOE import evaluation_of_effectiveness
 from flask import Flask, request, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, current_user
@@ -555,6 +555,9 @@ def logout():
 @app.route('/analytics_add_data', methods=['POST', 'GET'])
 @login_required
 def analytics_add_data():
+    # Получение списка маршрутов из базы данных
+    routes = Routes.query.all()
+
     # получаем айди зашедшего на сайт
     user_id = current_user.id
 
@@ -568,26 +571,24 @@ def analytics_add_data():
             number_of_road = request.form['number_of_road']
             date_start = request.form['start-date']
             date_end = request.form['end-date']
-            start_coordinates = request.form['start-coordinates']
-            end_coordinates = request.form['end-coordinates']
+            route_id = request.form['route']
             cost = request.form['cost']
             fuel_cost = request.form['fuel_cost']
 
-            # если получиться парсить автодор, то поле cost станет необязательным
+            # Дополнительная обработка данных, если необходимо
 
             data_of_roads_for_analytics[f'{number_of_road}'] = \
                 [f'{date_start}',
                 f'{date_end}',
-                f'{start_coordinates}',
-                f'{end_coordinates}',
+                f'{route_id}',
                 f'{cost}',
                 f'{fuel_cost}']
 
             return redirect("/analytics_add_data")
         else:
-            return render_template("analytics_add_data.html")
+            return render_template("analytics_add_data.html", routes=routes)
     else:
-        return 'у вас недостаточно прав'
+        return 'У вас недостаточно прав'
 
 
 # страница результатов анализа
