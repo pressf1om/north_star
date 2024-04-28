@@ -8,7 +8,14 @@
             <h2>Рейс № {{ number }}</h2>
             <p><strong>Дата начала поездки:</strong> {{ data_list[0] }}</p>
             <p><strong>Дата завершения поездки:</strong> {{ data_list[1] }}</p>
-            <p><strong>Маршрут:</strong> {{ data_list[2] }}</p>
+            <p><strong>Маршрут:</strong>
+                {% for route in routes %}
+                    {% if route.id == data_list[2]|int %}
+                        {{ route.city_start }} - {{ route.city_end }}
+                    {% endif %}
+                {% endfor %}
+
+            </p>
             <p><strong>Стоимость по автодору:</strong> {{ data_list[3] }}</p>
             <p><strong>Стоимость топлива:</strong> {{ data_list[4] }}</p>
             <form method="post">
@@ -18,7 +25,6 @@
         </div>
         {% endfor %}
     </div>
-
 
 <style>
 body {
@@ -72,6 +78,6 @@ body {
 .select-button:hover {
     background-color: #0056b3;
 }
-
 </style>
+
 {% endblock %}

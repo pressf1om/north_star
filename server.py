@@ -595,6 +595,9 @@ def analytics_add_data():
 @app.route('/analytics', methods=['POST', 'GET'])
 @login_required
 def analytics():
+    # Получение списка маршрутов из базы данных
+    routes = Routes.query.all()
+
     # получаем айди зашедшего на сайт
     user_id = current_user.id
 
@@ -607,7 +610,7 @@ def analytics():
         print(data_of_roads_for_analytics)
         # после кнопки выбрать, удаление словаря
         # делать через датасет с трассами и км и городами саму аналитику
-        return render_template("choosing_route.html", data_of_roads_for_analytics=data_of_roads_for_analytics)
+        return render_template("choosing_route.html", data_of_roads_for_analytics=data_of_roads_for_analytics, routes=routes)
     else:
         return 'у вас недостаточно прав'
 
