@@ -51,22 +51,49 @@
 {% for el in data %}
     <div class="container">
         <div class="card-deck mb-3 text-center">
+            {% if el.status == '2' %}
+                {% set color_ = "#ffa500" %}
+            {% elif el.status == '3' %}
+                {% set color_ = "#ffa500" %}
+            {% elif el.status == '4' %}
+                {% set color_ = "#ffa500" %}
+            {% elif el.status == '5' %}
+                {% set color_ = "#536d8e" %}
+            {% elif el.status == '6' %}
+                {% set color_ = "#ffa500" %}
+            {% elif el.status == '7' %}
+                {% set color_ = "#00ff80" %}
+            {% elif el.status == '8' %}
+                {% set color_ = "#008000" %}
+            {% else %}
+                {% set color_ = "red" %}
+            {% endif %}
             <div class="print">
                 <h2>ID заявки: {{ el.id }}</h2>
                 <h2>Стартовые координаты: {{ el.coord_start }}</h2>
                 <h2>Координаты конечной точки: {{ el.coord_end }}</h2>
                 <h2>Дата начала поездки: {{ el.date_of_start }}</h2>
                 <h2>Дата завершения рейса: {{ el.date_of_end }}</h2>
-                <h2>Статус заявки:
-                    {% if el.status == "1" %}
-                        Свободна
-                    {% elif el.status == "2" %}
-                        Назначена
-                    {% elif el.status == "3" %}
-                        В пути
-                    {% elif el.status == "4" %}
-                        Выполнена
-                    {% endif %}
+                <h2 style="color: {{ color_ }}; border-bottom: 1px solid black;">Статус заявки:
+                {% if el.status == "1" %}
+                    Свободна
+                {% elif el.status == "2" %}
+                    Назначена
+                {% elif el.status == "3" %}
+                    Прибыла на погрузку
+                {% elif el.status == "4" %}
+                    Погружена
+                {% elif el.status == "5" %}
+                    Транзит
+                {% elif el.status == "6" %}
+                    Прибыла на выгрузку
+                {% elif el.status == "7" %}
+                    Выгружена
+                {% elif el.status == "8" %}
+                    Завершение рейса
+                {% elif el.status == "9" %}
+                    Техническое обслуживание
+                {% endif %}
                 </h2>
                 <h2>Вес груза (в тоннах): {{ el.weight }}</h2>
                 <h2>Какая машина доставляет груз: {{ el.car_now }}</h2>

@@ -91,9 +91,19 @@
                 {% elif el.status == "2" %}
                     Назначена
                 {% elif el.status == "3" %}
-                    В пути
+                    Прибыла на погрузку
                 {% elif el.status == "4" %}
-                    Выполнена
+                    Погружена
+                {% elif el.status == "5" %}
+                    Транзит
+                {% elif el.status == "6" %}
+                    Прибыла на выгрузку
+                {% elif el.status == "7" %}
+                    Выгружена
+                {% elif el.status == "8" %}
+                    Завершение рейса
+                {% elif el.status == "9" %}
+                    Техническое обслуживание
                 {% endif %}
             </h2>
             <h2>weight: {{ el.weight }}</h2>

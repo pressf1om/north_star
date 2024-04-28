@@ -44,12 +44,20 @@
     <div class="data-window">
         <h2 class="text-center" style="color: #0077cc;">Машины</h2>
         {% for el in car_print %}
-            {% if el.status == '3' %}
-                {% set color_ = "#536d8e" %}
-            {% elif el.status == '2' %}
+            {% if el.status == '2' %}
+                {% set color_ = "#ffa500" %}
+            {% elif el.status == '3' %}
                 {% set color_ = "#ffa500" %}
             {% elif el.status == '4' %}
+                {% set color_ = "#ffa500" %}
+            {% elif el.status == '5' %}
+                {% set color_ = "#536d8e" %}
+            {% elif el.status == '6' %}
+                {% set color_ = "#ffa500" %}
+            {% elif el.status == '7' %}
                 {% set color_ = "#00ff80" %}
+            {% elif el.status == '8' %}
+                {% set color_ = "#008000" %}
             {% else %}
                 {% set color_ = "red" %}
             {% endif %}
@@ -57,15 +65,25 @@
                 <p class="car-number" style="color: {{ color_ }}; border-bottom: 1px solid black;">{{ el.car_number }}</p>
                 <p class="car-status">
                     Статус:
-                    {% if el.status == "1" %}
-                        Свободна
-                    {% elif el.status == "2" %}
-                        Назначена
-                    {% elif el.status == "3" %}
-                        В пути
-                    {% elif el.status == "4" %}
-                        Выполнена
-                    {% endif %}
+                {% if el.status == "1" %}
+                    Свободна
+                {% elif el.status == "2" %}
+                    Назначена
+                {% elif el.status == "3" %}
+                    Прибыла на погрузку
+                {% elif el.status == "4" %}
+                    Погружена
+                {% elif el.status == "5" %}
+                    Транзит
+                {% elif el.status == "6" %}
+                    Прибыла на выгрузку
+                {% elif el.status == "7" %}
+                    Выгружена
+                {% elif el.status == "8" %}
+                    Завершение рейса
+                {% elif el.status == "9" %}
+                    Техническое обслуживание
+                {% endif %}
                 </p>
             </div>
         {% endfor %}

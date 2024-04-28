@@ -113,10 +113,17 @@ class Settings_for_routes(db.Model):
 data_of_roads_for_analytics = {}
 
 # статусы
-# 1 - Свободна
-# 2 - Назначена
-# 3 - В пути
-# 4 - Выполнена
+# 1. Свободна
+# 2. Назначена
+# 3. Прибыла на погрузку
+# 4. Погружена
+# 5. Транзит
+# 6. Прибыла на выгрузку
+# 7. Выгружена
+# 8. Завершение рейса
+# Готовы ли к след рейсу?
+# Свободна
+# 9. На Т.О.
 
 
 # авторизация
@@ -139,7 +146,7 @@ def home():
     car_print = Cars.query.order_by(Cars.id).all()
 
     # достаем все заявки в пути
-    applications = Application.query.filter_by(status="3").all()
+    applications = Application.query.filter_by(status="5").all()
 
     # получаем специальный словарь для отображения заявок на карте
     car_coordinates = {}
@@ -622,13 +629,13 @@ def registration_new_application():
             cargo_weight = request.form['cargo-weight']
             car_now = request.form['car_now']
 
-            #  регистрация заявок
+            #  регистрация заявок , статус "Назначена"
             application = Application(coord_start=start_point, coord_end=end_point, date_of_start=departure_date, status='2', weight=cargo_weight, car_now=car_now)
 
             # внесение изменения в базу самих машин, изменение статуса машины
             car_status_after_application = Cars.query.filter_by(car_number=car_now).first()
 
-            # Изменяем атрибуты объекта
+            # Изменяем атрибуты объекта, статус "Назначена"
             car_status_after_application.status = '2'
 
             # регистрация в базе
@@ -688,8 +695,8 @@ def sqlalchemy_to_dict(obj):
 class Application_api(Resource):
     # получение актуальной заявки
     def get(self, car_number):
-        # получаем объект из бд
-        application = (Application.query.filter_by(car_now=car_number, status="3").first())
+        # получаем объект из бд, заявки со статусом "назначена"
+        application = (Application.query.filter_by(car_now=car_number, status="2").first())
         # преобразовываем в словарь с помощью sqlalchemy_to_dict
         application_dict = sqlalchemy_to_dict(application)
         # если объект не пустой
@@ -717,30 +724,60 @@ class Application_api(Resource):
         if application_post:
             # Если существует, изменяем статус заявки
             new_status = data.get('new_status')  # Предполагаем, что новый статус передается в теле запроса
-            # Если в пути, то меняем статус
-            if new_status == "3":
-                # меняем статус машины
-                car_post.status = '3'
-                # меняем статус заявки
-                application_post.status = '3'
-            # Если Поездка завершена, то меняем статус
-            elif new_status == "4":
-                # меняем статус машины
-                car_post.status = '4'
-                # меняем статус заявки
-                application_post.status = '4'
             # Если Свободна, то меняем статус
-            elif new_status == "1":
+            if new_status == "1":
                 # меняем статус машины
                 car_post.status = '1'
                 # меняем статус заявки
                 application_post.status = '1'
-                # Если Свободна, то меняем статус
+            # Назначена
             elif new_status == "2":
                 # меняем статус машины
                 car_post.status = '2'
                 # меняем статус заявки
                 application_post.status = '2'
+            # Прибыла на погрузку
+            elif new_status == "3":
+                # меняем статус машины
+                car_post.status = '3'
+                # меняем статус заявки
+                application_post.status = '3'
+            # Погружена
+            elif new_status == "4":
+                # меняем статус машины
+                car_post.status = '4'
+                # меняем статус заявки
+                application_post.status = '4'
+            # Транзит
+            elif new_status == "5":
+                # меняем статус машины
+                car_post.status = '5'
+                # меняем статус заявки
+                application_post.status = '5'
+            # Прибыла на выгрузку
+            elif new_status == "6":
+                # меняем статус машины
+                car_post.status = '6'
+                # меняем статус заявки
+                application_post.status = '6'
+            # Выгружена
+            elif new_status == "7":
+                # меняем статус машины
+                car_post.status = '7'
+                # меняем статус заявки
+                application_post.status = '7'
+            # Завершение рейса
+            elif new_status == "8":
+                # меняем статус машины
+                car_post.status = '8'
+                # меняем статус заявки
+                application_post.status = '8'
+            #  На Т.О.
+            elif new_status == "9":
+                # меняем статус машины
+                car_post.status = '9'
+                # меняем статус заявки
+                application_post.status = '9'
 
             # Сохраняем изменения в базе данных
             db.session.commit()
