@@ -571,6 +571,7 @@ def analytics_add_data():
             start_coordinates = request.form['start-coordinates']
             end_coordinates = request.form['end-coordinates']
             cost = request.form['cost']
+            fuel_cost = request.form['fuel_cost']
 
             # если получиться парсить автодор, то поле cost станет необязательным
 
@@ -579,7 +580,8 @@ def analytics_add_data():
                 f'{date_end}',
                 f'{start_coordinates}',
                 f'{end_coordinates}',
-                f'{cost}']
+                f'{cost}',
+                f'{fuel_cost}']
 
             return redirect("/analytics_add_data")
         else:
