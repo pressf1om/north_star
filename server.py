@@ -818,6 +818,7 @@ class Application_api(Resource):
 # Добавление ресурса к API
 api.add_resource(Application_api, '/api/applications/<string:car_number>')
 
+# дописать API для механиков
 
 if __name__ == '__main__':
     # port = int(os.environ.get("PORT", 5000))
