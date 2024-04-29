@@ -624,8 +624,20 @@ def analytics():
                 platon_km = route.platon_km
                 oll_km = route.oll_km
 
+                # получение данных из настроек
+                settings = db.session.get(Settings_for_routes, 1)
+
+                # platon_cost и driver_salary
+                platon_cost = settings.platon_cost
+                driver_salary = settings.driver_salary
+
                 # Вычисление финальной стоимости поездки с помощью функции evaluation_of_effectiveness
-                final_cost = evaluation_of_effectiveness(int(autodor_price), int(fuel_price), int(platon_km), int(oll_km))
+                final_cost = evaluation_of_effectiveness(int(autodor_price),
+                                                         int(fuel_price),
+                                                         int(platon_km),
+                                                         int(oll_km),
+                                                         int(platon_cost),
+                                                         int(driver_salary))
 
                 # Добавление в словарь номера маршрута и его финальной стоимости
                 final_costs[number] = {'final_cost': final_cost}
