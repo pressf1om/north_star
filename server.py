@@ -357,9 +357,7 @@ def add_settings():
             platon_cost = request.form['platon_cost']
 
             # Проверка существования предыдущих настроек и их удаление, если они есть
-            previous_settings = Settings_for_routes.query.get(1)
-            if previous_settings:
-                db.session.delete(previous_settings)
+            Settings_for_routes.query.delete()
 
             # Создание объекта настроек для регистрации в базе данных
             settings = Settings_for_routes(driver_salary=driver_salary, platon_cost=platon_cost)
@@ -632,12 +630,12 @@ def analytics():
                 driver_salary = settings.driver_salary
 
                 # Вычисление финальной стоимости поездки с помощью функции evaluation_of_effectiveness
-                final_cost = evaluation_of_effectiveness(int(autodor_price),
-                                                         int(fuel_price),
-                                                         int(platon_km),
-                                                         int(oll_km),
-                                                         int(platon_cost),
-                                                         int(driver_salary))
+                final_cost = evaluation_of_effectiveness(float(autodor_price),
+                                                         float(fuel_price),
+                                                         float(platon_km),
+                                                         float(oll_km),
+                                                         float(platon_cost),
+                                                         float(driver_salary))
 
                 # Добавление в словарь номера маршрута и его финальной стоимости
                 final_costs[number] = {'final_cost': final_cost}
