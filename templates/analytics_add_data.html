@@ -2,43 +2,50 @@
 
 {% block body %}
 <div class="container">
-    <h2>Аналитика данных</h2>
-    <form method="post" class="registration-form">
-        <div class="form-group">
-            <label for="number_of_road">Номер маршрута:</label>
-            <input type="text" maxlength="14" id="number_of_road" name="number_of_road" required>
-        </div>
-        <div class="form-group">
-            <label for="start-date">Дата начала рейса:</label>
-            <input type="date" id="start-date" name="start-date" required>
-        </div>
-        <div class="form-group">
-            <label for="end-date">Дата окончания рейса:</label>
-            <input type="date" id="end-date" name="end-date" required>
-        </div>
-        <div class="form-group">
-            <label for="route">Маршрут:</label>
-            <div class="select-wrapper">
-                <select id="route" name="route" required>
-                    <option value="" disabled selected>Выберите маршрут</option>
-                    {% for route in routes %}
-                        <option value="{{ route.id }}">{{ route.city_start }} - {{ route.city_end }}</option>
-                    {% endfor %}
-                </select>
+    <div class="form-block">
+        <h2>Аналитика данных</h2>
+        <form method="post" class="registration-form">
+            <div class="form-group">
+                <label for="number_of_road">Номер маршрута:</label>
+                <input type="text" maxlength="14" id="number_of_road" name="number_of_road" required>
             </div>
-        </div>
-        <div class="form-group">
-            <label for="cost">Стоимость поездки по автодору:</label>
-            <input type="number" id="cost" name="cost" min="0" required>
-        </div>
-        <div class="form-group">
-            <label for="fuel_cost">Стоимость топлива:</label>
-            <input type="number" id="fuel_cost" name="fuel_cost" min="0" required>
-        </div>
-        <button type="submit">Добавить</button>
-    </form>
-    <div class="analytics-btn">
-        <a href="/analytics">Перейти к аналитике</a>
+            <div class="form-group">
+                <label for="start-date">Дата начала рейса:</label>
+                <input type="date" id="start-date" name="start-date" required>
+            </div>
+            <div class="form-group">
+                <label for="end-date">Дата окончания рейса:</label>
+                <input type="date" id="end-date" name="end-date" required>
+            </div>
+            <div class="form-group">
+                <label for="route">Маршрут:</label>
+                <div class="select-wrapper">
+                    <select id="route" name="route" required>
+                        <option value="" disabled selected>Выберите маршрут</option>
+                        {% for route in routes %}
+                            <option value="{{ route.id }}">{{ route.city_start }} - {{ route.city_end }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="cost">Стоимость поездки по автодору:</label>
+                <input type="number" id="cost" name="cost" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="fuel_cost">Стоимость топлива:</label>
+                <input type="number" id="fuel_cost" name="fuel_cost" min="0" required>
+            </div>
+            <button type="submit">Добавить</button>
+        </form>
+    </div>
+    <div class="useful-links">
+        <h2>Полезные ссылки</h2>
+        <ul>
+            <li><a href="#">Ссылка 1</a></li>
+            <li><a href="#">Ссылка 2</a></li>
+            <li><a href="#">Ссылка 3</a></li>
+        </ul>
     </div>
 </div>
 
@@ -72,10 +79,24 @@
 
 /* Дополнительные стили для элементов формы */
 .container {
-    max-width: 500px;
+    max-width: 800px; /* Увеличим ширину контейнера */
     margin: 20px auto;
     padding: 20px;
     background-color: #ecf0f1; /* Светло-серый */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Тень */
+    display: flex; /* Расположим блоки в строку */
+}
+
+.form-block {
+    flex: 2; /* Дадим блоку формы больший вес */
+    margin-right: 20px; /* Добавим отступ справа */
+}
+
+.useful-links {
+    flex: 1; /* Дадим блоку с ссылками меньший вес */
+    background-color: #fff; /* Белый фон блока с ссылками */
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Тень */
 }
@@ -118,24 +139,24 @@ button:hover {
     background-color: #27ae60; /* Темно-зеленый при наведении */
 }
 
-.analytics-btn {
-    text-align: center;
-    margin-top: 20px;
+.useful-links ul {
+    list-style: none;
+    padding: 0;
 }
 
-.analytics-btn a {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #3498db; /* Голубой */
-    color: #fff;
+.useful-links ul li {
+    margin-bottom: 10px;
+}
+
+.useful-links ul li a {
+    color: #3498db; /* Цвет ссылки */
     text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
 }
 
-.analytics-btn a:hover {
-    background-color: #2980b9; /* Темно-голубой при наведении */
+.useful-links ul li a:hover {
+    text-decoration: underline;
 }
 
 </style>
 {% endblock %}
+
