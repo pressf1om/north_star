@@ -591,28 +591,48 @@ def analytics_add_data():
         return 'У вас недостаточно прав'
 
 
-# страница результатов анализа
+# Страница результатов анализа
 @app.route('/analytics', methods=['POST', 'GET'])
 @login_required
 def analytics():
     # Получение списка маршрутов из базы данных
     routes = Routes.query.all()
 
-    # получаем айди зашедшего на сайт
+    # Получение айди зашедшего на сайт
     user_id = current_user.id
 
-    # инфа о пользователе из бд
+    # Информация о пользователе из бд
     temp = (User.query.filter_by(id=user_id).first()).__dict__
 
-    # разграничение прав доступа
+    # Разграничение прав доступа
     if temp['status'] == 'Администратор' or temp['status'] == 'Диспетчер':
-        # словарь со всеми зареганными заявками
-        print(data_of_roads_for_analytics)
-        # после кнопки выбрать, удаление словаря
-        # делать через датасет с трассами и км и городами саму аналитику
-        return render_template("choosing_route.html", data_of_roads_for_analytics=data_of_roads_for_analytics, routes=routes)
+        if request.method == "POST":
+            pass
+        else:
+            final_costs = {}
+            for number, data_list in data_of_roads_for_analytics.items():
+                autodor_price = data_list[3]
+                fuel_price = data_list[4]
+
+                # Получение айди маршрута из словаря data_of_roads_for_analytics
+                route_id = data_list[2]
+
+                # Получение объекта маршрута из базы данных по его айди
+                route = Routes.query.get(route_id)
+
+                # Получение значений platon_km и autodor_km из объекта маршрута
+                platon_km = route.platon_km
+                oll_km = route.oll_km
+
+                # Вычисление финальной стоимости поездки с помощью функции evaluation_of_effectiveness
+                final_cost = evaluation_of_effectiveness(int(autodor_price), int(fuel_price), int(platon_km), int(oll_km))
+
+                # Добавление в словарь номера маршрута и его финальной стоимости
+                final_costs[number] = {'final_cost': final_cost}
+
+            return render_template("choosing_route.html", data_of_roads_for_analytics=data_of_roads_for_analytics, final_costs=final_costs, routes=routes)
     else:
-        return 'у вас недостаточно прав'
+        return 'У вас недостаточно прав'
 
 
 # страница регистрации заявки

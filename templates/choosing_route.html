@@ -14,10 +14,15 @@
                         {{ route.city_start }} - {{ route.city_end }}
                     {% endif %}
                 {% endfor %}
-
             </p>
             <p><strong>Стоимость по автодору:</strong> {{ data_list[3] }}</p>
             <p><strong>Стоимость топлива:</strong> {{ data_list[4] }}</p>
+
+            <!-- Отображение данных из словаря final_costs -->
+            {% if final_costs %}
+            <p><strong>Финальная стоимость:</strong> {{ final_costs[number]['final_cost'] }}</p>
+            {% endif %}
+
             <form method="post">
                 <!-- Include form fields here -->
                 <button type="submit" class="select-button">Выбрать</button>
@@ -81,3 +86,4 @@ body {
 </style>
 
 {% endblock %}
+
