@@ -709,6 +709,12 @@ def current_applications():
         return 'у вас недостаточно прав'
 
 
+# about
+@app.route('/about', methods=['GET', 'POST'])
+def about():
+    return render_template("about.html")
+
+
 # преобразование объекта бд в словарь
 def sqlalchemy_to_dict(obj):
     try:
