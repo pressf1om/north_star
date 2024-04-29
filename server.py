@@ -618,7 +618,7 @@ def analytics():
                 route_id = data_list[2]
 
                 # Получение объекта маршрута из базы данных по его айди
-                route = Routes.query.get(route_id)
+                route = db.session.get(Routes, route_id)
 
                 # Получение значений platon_km и autodor_km из объекта маршрута
                 platon_km = route.platon_km

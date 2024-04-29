@@ -1,5 +1,6 @@
 # from POPF import get_price_fuel
 
+# в дальнейшем будет браться из класса Settings, также нужно добавить стоимость бензина
 platon_cost = 3.73
 driver_salary = 12
 
