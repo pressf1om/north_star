@@ -1,6 +1,5 @@
-# import
 import re
-from EOE import evaluation_of_effectiveness
+import os
 from flask import Flask, request, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, current_user
@@ -28,6 +27,7 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 api = Api(app)
+application = app
 
 
 # class user for db
@@ -109,8 +109,28 @@ class Settings_for_routes(db.Model):
     platon_cost = db.Column(db.Float)
 
 
-# необходимые переменные
-data_of_roads_for_analytics = {}
+class Temp_base_for_analytics(db.Model):
+    # id
+    id = db.Column(db.Integer, primary_key=True)
+    # Номер маршрута
+    number_of_road = db.Column(db.Integer)
+    # date_start
+    date_start = db.Column(db.String(120))
+    # date_end
+    date_end = db.Column(db.String(120))
+    # Номер route_id
+    route_id = db.Column(db.Integer)
+    # cost
+    cost = db.Column(db.Integer)
+    # fuel_cost
+    fuel_cost = db.Column(db.Integer)
+
+
+# функция подсчета эффективности маршрута
+def evaluation_of_effectiveness(autodor_price, fuel_price, kilometrs_for_platon, oll_kilometrs, platon_cost, driver_salary):
+    result_cost = ((kilometrs_for_platon * platon_cost) + autodor_price + (driver_salary * oll_kilometrs)) + fuel_price
+
+    return result_cost
 
 # статусы
 # 1. Свободна
@@ -157,7 +177,7 @@ def home():
         car_coordinates[car_number] = (coord_start, coord_end)
 
     # Загрузка файла GeoJSON/json
-    with open('geo_data/geoBoundaries-RUS-ADM1_simplified.geojson') as f:
+    with open('geo_data/geoBoundaries-RUS-ADM0_simplified.geojson') as f:
         geojson_data = json.load(f)
 
     # Создание карты с помощью Plotly
@@ -573,14 +593,16 @@ def analytics_add_data():
             cost = request.form['cost']
             fuel_cost = request.form['fuel_cost']
 
-            # Дополнительная обработка данных, если необходимо
+            routes_analytics_db = Temp_base_for_analytics(number_of_road=number_of_road,
+                                                          date_start=date_start,
+                                                          date_end=date_end,
+                                                          route_id=route_id,
+                                                          cost=cost,
+                                                          fuel_cost=fuel_cost)
 
-            data_of_roads_for_analytics[f'{number_of_road}'] = \
-                [f'{date_start}',
-                f'{date_end}',
-                f'{route_id}',
-                f'{cost}',
-                f'{fuel_cost}']
+            # регистрация в базе
+            db.session.add(routes_analytics_db)
+            db.session.commit()
 
             return redirect("/analytics_add_data")
         else:
@@ -589,47 +611,47 @@ def analytics_add_data():
         return 'У вас недостаточно прав'
 
 
-# Страница результатов анализа
 @app.route('/analytics', methods=['POST', 'GET'])
 @login_required
 def analytics():
-    # Получение списка маршрутов из базы данных
+    # Получаем список маршрутов из базы данных
     routes = Routes.query.all()
 
-    # Получение айди зашедшего на сайт
+    # Получаем айди зашедшего на сайт пользователя
     user_id = current_user.id
 
-    # Информация о пользователе из бд
-    temp = (User.query.filter_by(id=user_id).first()).__dict__
+    # Получаем информацию о пользователе из базы данных
+    user_info = db.session.get(User, user_id)
 
     # Разграничение прав доступа
-    if temp['status'] == 'Администратор' or temp['status'] == 'Диспетчер':
+    if user_info.status in ['Администратор', 'Диспетчер']:
         if request.method == "POST":
-            pass
+            db.session.query(Temp_base_for_analytics).delete()
+            db.session.commit()
+            # дописать удаление всех объектов кроме выбранного
+            return redirect("/registration_new_application")
         else:
             final_costs = {}
-            for number, data_list in data_of_roads_for_analytics.items():
-                autodor_price = data_list[3]
-                fuel_price = data_list[4]
+            # Получаем данные из базы данных Temp_base_for_analytics
+            data_for_analytics = Temp_base_for_analytics.query.all()
+            for data_row in data_for_analytics:
+                autodor_price = data_row.cost
+                fuel_price = data_row.fuel_cost
+                route_id = data_row.route_id
 
-                # Получение айди маршрута из словаря data_of_roads_for_analytics
-                route_id = data_list[2]
-
-                # Получение объекта маршрута из базы данных по его айди
+                # Получаем объект маршрута из базы данных по его айди
                 route = db.session.get(Routes, route_id)
 
-                # Получение значений platon_km и autodor_km из объекта маршрута
+                # Получаем значения platon_km и oll_km из объекта маршрута
                 platon_km = route.platon_km
                 oll_km = route.oll_km
 
-                # получение данных из настроек
+                # Получаем данные из настроек
                 settings = db.session.get(Settings_for_routes, 1)
-
-                # platon_cost и driver_salary
                 platon_cost = settings.platon_cost
                 driver_salary = settings.driver_salary
 
-                # Вычисление финальной стоимости поездки с помощью функции evaluation_of_effectiveness
+                # Вычисляем финальную стоимость поездки с помощью функции evaluation_of_effectiveness
                 final_cost = evaluation_of_effectiveness(float(autodor_price),
                                                          float(fuel_price),
                                                          float(platon_km),
@@ -637,10 +659,10 @@ def analytics():
                                                          float(platon_cost),
                                                          float(driver_salary))
 
-                # Добавление в словарь номера маршрута и его финальной стоимости
-                final_costs[number] = {'final_cost': final_cost}
+                # Добавляем в словарь номер маршрута и его финальную стоимость
+                final_costs[data_row.id] = {'final_cost': final_cost}
 
-            return render_template("choosing_route.html", data_of_roads_for_analytics=data_of_roads_for_analytics, final_costs=final_costs, routes=routes)
+            return render_template("choosing_route.html", data_for_analytics=data_for_analytics, final_costs=final_costs, routes=routes)
     else:
         return 'У вас недостаточно прав'
 
@@ -666,7 +688,7 @@ def registration_new_application():
             car_now = request.form['car_now']
 
             #  регистрация заявок , статус "Назначена"
-            application = Application(coord_start=start_point, coord_end=end_point, date_of_start=departure_date, status='2', weight=cargo_weight, car_now=car_now)
+            application_new = Application(coord_start=start_point, coord_end=end_point, date_of_start=departure_date, status='2', weight=cargo_weight, car_now=car_now)
 
             # внесение изменения в базу самих машин, изменение статуса машины
             car_status_after_application = Cars.query.filter_by(car_number=car_now).first()
@@ -675,7 +697,7 @@ def registration_new_application():
             car_status_after_application.status = '2'
 
             # регистрация в базе
-            db.session.add(application)
+            db.session.add(application_new)
             db.session.commit()
 
             print(f"application #{departure_date} was created")
@@ -738,9 +760,9 @@ class Application_api(Resource):
     # получение актуальной заявки
     def get(self, car_number):
         # получаем объект из бд, заявки со статусом "назначена"
-        application = (Application.query.filter_by(car_now=car_number, status="2").first())
+        application_get = (Application.query.filter_by(car_now=car_number, status="2").first())
         # преобразовываем в словарь с помощью sqlalchemy_to_dict
-        application_dict = sqlalchemy_to_dict(application)
+        application_dict = sqlalchemy_to_dict(application_get)
         # если объект не пустой
         if application_dict:
             return jsonify(application_dict)
@@ -837,6 +859,5 @@ api.add_resource(Application_api, '/api/applications/<string:car_number>')
 # дописать API для механиков
 
 if __name__ == '__main__':
-    # port = int(os.environ.get("PORT", 5000))
-    # app.run(host='0.0.0.0', port=port)
-    app.run(host='127.0.0.1', port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)

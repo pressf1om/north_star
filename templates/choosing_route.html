@@ -7,31 +7,31 @@
 {% block body %}
 
     <div class="gallery-container">
-        {% for number, data_list in data_of_roads_for_analytics.items() %}
+        {% for data_row in data_for_analytics %}
         <div class="form-card">
-            <h2>Рейс № {{ number }}</h2>
-            <p><strong>Дата начала поездки:</strong> {{ data_list[0] }}</p>
-            <p><strong>Дата завершения поездки:</strong> {{ data_list[1] }}</p>
+            <h2>Рейс № {{ data_row.id }}</h2>
+            <p><strong>Дата начала поездки:</strong> {{ data_row.start_date }}</p>
+            <p><strong>Дата завершения поездки:</strong> {{ data_row.end_date }}</p>
             <p><strong>Маршрут:</strong>
                 {% for route in routes %}
-                    {% if route.id == data_list[2]|int %}
+                    {% if route.id == data_row.route_id %}
                         {{ route.city_start }} - {{ route.city_end }}
                     {% endif %}
                 {% endfor %}
             </p>
-            <p><strong>Стоимость по автодору:</strong> {{ data_list[3] }}</p>
-            <p><strong>Стоимость топлива:</strong> {{ data_list[4] }}</p>
+            <p><strong>Стоимость по автодору:</strong> {{ data_row.cost }}</p>
+            <p><strong>Стоимость топлива:</strong> {{ data_row.fuel_cost }}</p>
 
             <!-- Отображение данных из словаря final_costs -->
             {% if final_costs %}
-            <p><strong>Финальная стоимость:</strong> {{ final_costs[number]['final_cost'] }}</p>
+            <p><strong>Финальная стоимость:</strong> {{ final_costs[data_row.id]['final_cost'] }}</p>
             {% endif %}
-            <!--
+
             <form method="post">
-                 дописать автозаполнение заявки в разделе регистрация
-                <button type="submit" class="select-button">Выбрать</button>
+                 <!-- дописать автозаполнение заявки в разделе регистрация-->
+                <button type="submit" class="select-button">Зарегистировать заявку</button>
             </form>
-             -->
+
         </div>
         {% endfor %}
     </div>
@@ -91,4 +91,5 @@ body {
 </style>
 
 {% endblock %}
+
 
