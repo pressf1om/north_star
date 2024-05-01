@@ -760,7 +760,7 @@ class Application_api(Resource):
     # получение актуальной заявки
     def get(self, car_number):
         # получаем объект из бд, заявки со статусом "назначена"
-        application_get = (Application.query.filter_by(car_now=car_number, status="2").first())
+        application_get = (Application.query.filter_by(car_now=car_number).first())
         # преобразовываем в словарь с помощью sqlalchemy_to_dict
         application_dict = sqlalchemy_to_dict(application_get)
         # если объект не пустой
