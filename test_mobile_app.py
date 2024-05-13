@@ -1,14 +1,15 @@
 import requests
 # Имитация приложения водителя
 
+status_car_now = ''
 
 # GET
 def get(number_car):
+    global status_car_now
     url = f"http://northstar-logistics.ru/api/applications/{number_car}"  # кодирование пробела в URL
     response = requests.get(url)
     data = response.json()
     print(data)
-    status_car_now = ''
     if response.json()['status'] == '1':
         status_car_now = 'Свободна'
     if response.json()['status'] == '2':
@@ -57,26 +58,80 @@ input_user_number_car = input('Номер (Точно также как и на 
 input_user_number_car.replace(' ', "%20")
 
 get(input_user_number_car)
+post(input_user_number_car, 2)
 
-print('Для того чтобы изменить статус заявки введите соотвествующую цифру из меню.')
 
-menu = """
-# статусы
-# 1. Свободна
-# 2. Назначена
-# 3. Прибыла на погрузку
-# 4. Погружена
-# 5. Транзит
-# 6. Прибыла на выгрузку
-# 7. Выгружена
-# 8. Завершение рейса
-# 9. На Т.О.
-"""
+if status_car_now == 'Назначена':
+    print('Вы доехали до места погрузки?')
+    a = int(input('1 - Да, 2 - Нет, Введите цифру: '))
+    if a == 1:
+        post(input_user_number_car, 3)
+        get(input_user_number_car)
+    else:
+        print("Доезжайте.")
+if status_car_now == 'Прибыла на погрузку':
+    print('Вы загрузились?')
+    a = int(input('1 - Да, 2 - Нет, Введите цифру: '))
+    if a == 1:
+        post(input_user_number_car, 4)
+        get(input_user_number_car)
+    else:
+        print("Грузитесь.")
+if status_car_now == 'Погружена':
+    print('Вы в пути?')
+    a = int(input('1 - Да, 2 - Нет, Введите цифру: '))
+    if a == 1:
+        post(input_user_number_car, 5)
+        get(input_user_number_car)
+    else:
+        print("Готовьтесь к выезду.")
+if status_car_now == 'Транзит':
+    print('Вы доехали до выгрузки?')
+    a = int(input('1 - Да, 2 - Нет, Введите цифру: '))
+    if a == 1:
+        post(input_user_number_car, 6)
+        get(input_user_number_car)
+    else:
+        print("Едте.")
+if status_car_now == 'Прибыла на выгрузку':
+    print('Вы выгрузились?')
+    a = int(input('1 - Да, 2 - Нет, Введите цифру: '))
+    if a == 1:
+        post(input_user_number_car, 7)
+        get(input_user_number_car)
+    else:
+        print("Выгружайтесь.")
+if status_car_now == 'Выгружена':
+    print('Вы готовы завершить рейс?')
+    a = int(input('1 - Да, 2 - Нет, Введите цифру: '))
+    if a == 1:
+        post(input_user_number_car, 8)
+        get(input_user_number_car)
+    else:
+        print('Вам нужно тех. обслуживание?')
+        b = int(input('1 - Да, 2 - Нет, Введите цифру: '))
+        if b == 1:
+            post(input_user_number_car, 9)
+            print("Мы уведомили об этом администратора")
+        else:
+            post(input_user_number_car, 9)
+            get(input_user_number_car)
+            print('Завершайте рейс')
+if status_car_now == 'На Т.О.':
+    print('Вы обслужили машину?')
+    c = int(input('1 - Да, 2 - Нет, Введите цифру: '))
+    if c == 1:
+        post(input_user_number_car, 1)
+        print("Ждите новый рейс")
+    else:
+        print('Обратитесь к администратору')
+if status_car_now == 'Завершение рейса':
+    print('Вы готовы ехать дальше?')
+    r = int(input('1 - Да, 2 - Нет, Введите цифру: '))
+    if r == 1:
+        post(input_user_number_car, 1)
+        print("Ждите новый рейс")
+    else:
+        print('Обратитесь к администратору')
 
-print(menu)
 
-input_user_change_status = input()
-
-post(input_user_number_car, input_user_change_status)
-
-get(input_user_number_car)
