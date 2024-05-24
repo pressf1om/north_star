@@ -81,6 +81,25 @@ class Application(db.Model, UserMixin):
     car_now = db.Column(db.String(120), nullable=True)
 
 
+class CompletedApplication(db.Model, UserMixin):
+    # айди заявки
+    id = db.Column(db.Integer, primary_key=True)
+    # координаты начала
+    coord_start = db.Column(db.String(120), nullable=False)
+    # координаты конца
+    coord_end = db.Column(db.String(120), nullable=False)
+    # дата начала поездки
+    date_of_start = db.Column(db.String(120), nullable=False)
+    # дата окончания поездки
+    date_of_end = db.Column(db.String(120), nullable=True)
+    # статус заявки
+    status = db.Column(db.String(120))
+    # вес груза
+    weight = db.Column(db.String(120), nullable=True)
+    # фура на заявке сейчас
+    car_now = db.Column(db.String(120), nullable=True)
+
+
 class Routes(db.Model, UserMixin):
     # айди маршрута
     id = db.Column(db.Integer, primary_key=True)
@@ -131,6 +150,23 @@ def evaluation_of_effectiveness(autodor_price, fuel_price, kilometrs_for_platon,
     result_cost = ((kilometrs_for_platon * platon_cost) + autodor_price + (driver_salary * oll_kilometrs)) + fuel_price
 
     return result_cost
+
+
+# функция копирования заявки
+def move_completed_application(application_id):
+    application_ = db.session.get(Application, application_id)
+    completed_application = CompletedApplication(
+        coord_start=application_.coord_start,
+        coord_end=application_.coord_end,
+        date_of_start=application_.date_of_start,
+        date_of_end=application_.date_of_end,
+        status=application_.status,
+        weight=application_.weight,
+        car_now=application_.car_now
+    )
+    db.session.add(completed_application)
+    db.session.delete(application_)
+    db.session.commit()
 
 # статусы
 # 1. Свободна
@@ -741,6 +777,13 @@ def current_applications():
         return 'у вас недостаточно прав'
 
 
+# выполненные заявки
+@app.route('/archived_applications', methods=['GET'])
+def archived_applications():
+    archived_apps = CompletedApplication.query.all()  # Извлекаем все выполненные заявки из базы данных
+    return render_template("archived_applications.html", archived_apps=archived_apps)
+
+
 # about
 @app.route('/about', methods=['GET', 'POST'])
 def about():
@@ -793,7 +836,7 @@ class Application_api(Resource):
                 # меняем статус машины
                 car_post.status = '1'
                 # меняем статус заявки
-                application_post.status = '1'
+                move_completed_application(application_post.id)
             # Назначена
             elif new_status == "2":
                 # меняем статус машины

@@ -3,10 +3,11 @@ import requests
 
 status_car_now = ''
 
+
 # GET
 def get(number_car):
     global status_car_now
-    url = f"http://northstar-logistics.ru/api/applications/{number_car}"  # кодирование пробела в URL
+    url = f"http://127.0.0.1:5000/api/applications/{number_car}"  # кодирование пробела в URL
     response = requests.get(url)
     data = response.json()
     print(data)
@@ -34,7 +35,7 @@ def get(number_car):
 
 # POST
 def post(number_car, status_):
-    url = f"http://northstar-logistics.ru/api/applications/{number_car}"  # кодирование пробела в URL
+    url = f"http://127.0.0.1:5000/api/applications/{number_car}"  # кодирование пробела в URL
     # JSON-тело запроса
     payload = {
         "new_status": f"{status_}"
