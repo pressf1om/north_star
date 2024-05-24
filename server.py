@@ -896,8 +896,26 @@ class Application_api(Resource):
             return {'message': 'Application not found'}, 404
 
 
+class CompletedApplicationApi(Resource):
+    def get(self, car_number):
+        # Получаем все объекты из базы данных для модели CompletedApplication по номеру машины
+        completed_applications_get = CompletedApplication.query.filter_by(car_now=car_number).all()
+
+        # Преобразуем каждый объект в словарь
+        completed_applications_dicts = [sqlalchemy_to_dict(completed_application) for completed_application in
+                                        completed_applications_get]
+
+        # Если есть хотя бы один объект, возвращаем их в формате JSON
+        if completed_applications_dicts:
+            return jsonify(completed_applications_dicts)
+        else:
+            return {'message': 'No Completed Applications found for the given car number'}, 404
+
+
 # Добавление ресурса к API
 api.add_resource(Application_api, '/api/applications/<string:car_number>')
+# Добавляем  ресурс к API для обработки запросов для модели CompletedApplication
+api.add_resource(CompletedApplicationApi, '/api/completed_applications/<string:car_number>')
 
 # дописать API для механиков
 
