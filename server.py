@@ -145,6 +145,15 @@ class Temp_base_for_analytics(db.Model):
     fuel_cost = db.Column(db.Integer)
 
 
+# сообщения от водителей
+class DriverMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String(500), nullable=False)
+
+    def __init__(self, message):
+        self.message = message
+
+
 # функция подсчета эффективности маршрута
 def evaluation_of_effectiveness(autodor_price, fuel_price, kilometrs_for_platon, oll_kilometrs, platon_cost, driver_salary):
     result_cost = ((kilometrs_for_platon * platon_cost) + autodor_price + (driver_salary * oll_kilometrs)) + fuel_price
@@ -778,10 +787,28 @@ def current_applications():
 
 
 # выполненные заявки
-@app.route('/archived_applications', methods=['GET'])
+@app.route('/archived_applications', methods=['POST', 'GET'])
 def archived_applications():
     archived_apps = CompletedApplication.query.all()  # Извлекаем все выполненные заявки из базы данных
     return render_template("archived_applications.html", archived_apps=archived_apps)
+
+
+# получение сообщений от водителей
+@app.route('/help_me_driver', methods=['POST', 'GET'])
+def help_me_driver():
+    if request.method == "POST":
+        message = request.json.get('message')  # Получаем сообщение из тела запроса
+        if message:
+            new_message = DriverMessage(message)
+            db.session.add(new_message)
+            db.session.commit()
+            return jsonify({"success": True, "message": "Сообщение успешно сохранено"}), 201
+        else:
+            return jsonify({"success": False, "message": "Сообщение не должно быть пустым"}), 400
+    else:  # Обработка GET-запроса
+        messages = DriverMessage.query.all()  # Получаем все сообщения из базы данных
+        messages_list = [{"id": msg.id, "message": msg.message} for msg in messages]
+        return jsonify(messages_list)
 
 
 # about
