@@ -807,6 +807,21 @@ def help_me_driver():
     else:  # Обработка GET-запроса
         messages = DriverMessage.query.all()
         messages_list = [{"id": msg.id, "message": msg.message, "car_number": msg.car_number} for msg in messages]
+        return render_template('messages.html', messages=messages_list)
+
+
+# фильтрация сообщений
+@app.route('/filter_messages', methods=['GET'])
+def filter_messages():
+    car_number = request.args.get('car_number')  # Получаем номер машины из параметра запроса
+    if car_number:
+        messages = DriverMessage.query.filter_by(car_number=car_number).all()  # Фильтруем сообщения по номеру машины
+        messages_list = [{"id": msg.id, "message": msg.message, "car_number": msg.car_number} for msg in messages]
+        return jsonify(messages_list)
+    else:
+        # Если номер машины не указан, возвращаем все сообщения
+        messages = DriverMessage.query.all()
+        messages_list = [{"id": msg.id, "message": msg.message, "car_number": msg.car_number} for msg in messages]
         return jsonify(messages_list)
 
 

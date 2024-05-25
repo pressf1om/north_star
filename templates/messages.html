@@ -1,0 +1,63 @@
+{% extends "main.html" %}
+
+{% block header %}
+<title>Сообщения водителей</title>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+  <h2 class="text-center my-4">Сообщения водителей</h2>
+  <div class="row justify-content-center mb-4">
+    <div class="col-md-6">
+      <form id="filterForm">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Введите номер машины" id="carNumberInput">
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="button" id="filterButton">Фильтровать</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped" id="messagesTable">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Сообщение</th>
+          <th scope="col">Номер машины</th>
+        </tr>
+      </thead>
+      <tbody id="messagesBody">
+        {% for message in messages %}
+        <tr class="messageRow">
+          <th scope="row">{{ message.id }}</th>
+          <td>{{ message.message }}</td>
+          <td>{{ message.car_number }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  document.getElementById('filterButton').addEventListener('click', function() {
+    var carNumber = document.getElementById('carNumberInput').value;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/filter_messages?car_number=' + encodeURIComponent(carNumber), true);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        var messages = JSON.parse(xhr.responseText);
+        var messagesBody = document.getElementById('messagesBody');
+        messagesBody.innerHTML = '';
+        messages.forEach(function(message) {
+          var row = '<tr class="messageRow"><th scope="row">' + message.id + '</th><td>' + message.message + '</td><td>' + message.car_number + '</td></tr>';
+          messagesBody.innerHTML += row;
+        });
+      }
+    };
+    xhr.send();
+  });
+</script>
+{% endblock %}
