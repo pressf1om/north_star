@@ -1,37 +1,83 @@
 {% extends "main.html" %}
 
 {% block head %}
-<title>Archived Applications</title>
+<title>Архивные заявки</title>
+<style>
+    .table-container {
+        margin-top: 20px;
+        margin-left: -100px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .table-container .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table-container .table th,
+    .table-container .table td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .table-container .table th {
+        background-color: #343a40;
+        color: #ffffff;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+
+    .table-container .table tbody tr:nth-of-type(odd) {
+        background-color: #f8f9fa;
+    }
+
+    .table-container .table tbody tr:nth-of-type(even) {
+        background-color: #e9ecef;
+    }
+
+    .table-container .table tbody tr:hover {
+        background-color: #ced4da;
+    }
+</style>
 {% endblock %}
 
 {% block body %}
-    <h2>Archived Applications</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Start Coordinates</th>
-                <th>End Coordinates</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Status</th>
-                <th>Weight</th>
-                <th>Current Car</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for app in archived_apps %}
+<div class="container">
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">ID</th>
+                    <th style="width: 10%;">Статус</th>
+                    <th style="width: 15%;">Дата начала поездки</th>
+                    <th style="width: 15%;">Координаты начала</th>
+                    <th style="width: 15%;">Координаты конца</th>
+                    <th style="width: 15%;">Дата окончания поездки</th>
+                    <th style="width: 10%;">Вес груза (в тоннах)</th>
+                    <th style="width: 15%;">Номер машины</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in archived_apps %}
                 <tr>
                     <td>{{ app.id }}</td>
+                    <td>{{ app.status }}</td>
+                    <td>{{ app.date_of_start }}</td>
                     <td>{{ app.coord_start }}</td>
                     <td>{{ app.coord_end }}</td>
-                    <td>{{ app.date_of_start }}</td>
                     <td>{{ app.date_of_end }}</td>
-                    <td>{{ app.status }}</td>
                     <td>{{ app.weight }}</td>
                     <td>{{ app.car_now }}</td>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}
+
+
