@@ -66,9 +66,9 @@ class Application(db.Model, UserMixin):
     # айди заявки
     id = db.Column(db.Integer, primary_key=True)
     # координаты начала
-    coord_start = db.Column(db.String(120), nullable=False, unique=True)
+    coord_start = db.Column(db.String(120), nullable=False)
     # координаты конца
-    coord_end = db.Column(db.String(120), nullable=False, unique=True)
+    coord_end = db.Column(db.String(120), nullable=False)
     # дата начала поездки
     date_of_start = sqlalchemy.Column(db.String(120), nullable=False)
     # дата окончания поездки
@@ -148,10 +148,8 @@ class Temp_base_for_analytics(db.Model):
 # сообщения от водителей
 class DriverMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    message = db.Column(db.String(500), nullable=False)
-
-    def __init__(self, message):
-        self.message = message
+    message = db.Column(db.String(5000), nullable=False)
+    car_number = db.Column(db.String(20), nullable=False)
 
 
 # функция подсчета эффективности маршрута
@@ -797,17 +795,18 @@ def archived_applications():
 @app.route('/help_me_driver', methods=['POST', 'GET'])
 def help_me_driver():
     if request.method == "POST":
-        message = request.json.get('message')  # Получаем сообщение из тела запроса
-        if message:
-            new_message = DriverMessage(message)
+        message = request.json.get('message')
+        car_number = request.json.get('car_number')  # Получаем номер машины из тела запроса
+        if message and car_number:  # Проверяем, что оба параметра присутствуют
+            new_message = DriverMessage(message=message, car_number=car_number)  # Создаем новое сообщение
             db.session.add(new_message)
             db.session.commit()
             return jsonify({"success": True, "message": "Сообщение успешно сохранено"}), 201
         else:
-            return jsonify({"success": False, "message": "Сообщение не должно быть пустым"}), 400
+            return jsonify({"success": False, "message": "Сообщение или номер машины не должны быть пустыми"}), 400
     else:  # Обработка GET-запроса
-        messages = DriverMessage.query.all()  # Получаем все сообщения из базы данных
-        messages_list = [{"id": msg.id, "message": msg.message} for msg in messages]
+        messages = DriverMessage.query.all()
+        messages_list = [{"id": msg.id, "message": msg.message, "car_number": msg.car_number} for msg in messages]
         return jsonify(messages_list)
 
 
@@ -923,6 +922,7 @@ class Application_api(Resource):
             return {'message': 'Application not found'}, 404
 
 
+# api для отображения архивных заявок
 class CompletedApplicationApi(Resource):
     def get(self, car_number):
         # Получаем все объекты из базы данных для модели CompletedApplication по номеру машины
